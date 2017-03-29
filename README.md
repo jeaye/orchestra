@@ -15,7 +15,7 @@ Leiningen dependency:
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
-instead of `clojure.spec.test`. No code changes required!
+instead of `clojure.spec.test`. No further code changes required!
 
 ```clojure
 ;; Before
