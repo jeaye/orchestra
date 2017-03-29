@@ -1,5 +1,5 @@
 (defproject orchestra "0.1.0"
-  :description "Complete clojure.spec instrumentation"
+  :description "Complete instrumentation for clojure.spec"
   :url "https://github.com/jeaye/orchestra"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
