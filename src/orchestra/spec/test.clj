@@ -11,7 +11,7 @@
   (:require
    [clojure.pprint :as pp]
    [clojure.spec :as s]
-   [orchestra.spec.gen :as gen]
+   [clojure.spec.gen :as gen]
    [clojure.string :as str]))
 
 (in-ns 'orchestra.spec.test.check)
