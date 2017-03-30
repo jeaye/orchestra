@@ -11,7 +11,7 @@ Leiningen dependency:
 
 ```clojure
 ;; Requires Clojure >= 1.9.0
-[orchestra "0.1.0-SNAPSHOT"]
+[orchestra "0.2.0"]
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
