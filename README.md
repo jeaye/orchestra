@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jeaye/orchestra.svg?branch=master)]
+[![Build Status](https://travis-ci.org/jeaye/orchestra.svg?branch=master)](https://travis-ci.org/jeaye/orchestra)
 # Orchestra : complete instrumentation for clojure.spec
 Orchestra is a Clojure library made as a drop-in replacement for
 [clojure.spec.test](https://clojure.org/guides/spec), which provides custom
