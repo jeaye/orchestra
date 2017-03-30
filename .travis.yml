@@ -11,9 +11,9 @@ cache:
 script:
   - ./travis.sh
 
-#after_success:
-#- lein with-profile coverage cloverage --codecov
-#- bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
+after_success:
+- lein with-profile coverage cloverage --codecov
+- bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
 
 notifications:
   email:
