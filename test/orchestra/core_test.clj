@@ -46,6 +46,23 @@
   (testing "Negative"
     (is (thrown? RuntimeException (func' -42)))))
 
+(defn full'
+  [meow]
+  (Math/abs meow))
+(s/fdef full'
+        :args (s/cat :meow number?)
+        :fn #(let [meow (-> % :args :meow)
+                   ret (:ret %)]
+               (or (= ret meow)
+                   (and (< meow 0)
+                        (= (- ret) meow))))
+        :ret number?)
+
+(deftest full
+  (testing "Positive"
+    (is (full' 0))
+    (is (full' -10))))
+
 (defn func-no-args-spec
   [meow]
   (Math/abs meow))
