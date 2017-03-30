@@ -171,11 +171,6 @@ failure in instrument."
           (alter-var-root v (constantly raw))
           (->sym v))))))
 
-(defn- opt-syms
-  "Returns set of symbols referenced by 'instrument' opts map"
-  [opts]
-  (reduce into #{} [(:stub opts) (keys (:replace opts)) (keys (:spec opts))]))
-
 (defn- fn-spec-name?
   [s]
   (and (symbol? s)
