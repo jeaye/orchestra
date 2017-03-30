@@ -1,5 +1,4 @@
 # Orchestra : complete instrumentation for clojure.spec
-
 Orchestra is a Clojure library made as a drop-in replacement for
 [clojure.spec.test](https://clojure.org/guides/spec), which provides custom
 instrumentation that validates all aspects of function specs. By default,
@@ -7,7 +6,6 @@ clojure.spec will only instrument `:args`.  This leaves out `:ret` and `:fn`
 from automatic validation; Orchestra checks all of them for you.
 
 ## Usage
-
 Leiningen dependency:
 
 ```clojure
@@ -28,6 +26,11 @@ instead of `clojure.spec.test`. No further code changes required!
   (:require [orchestra.spec.test :as st]))
 ```
 
-## License
+## Donate
+Feel free to shoot Bitcoins my way: **123NMGCvRZLfQJwk2AhsLMLSpCCJhCRoz6**
 
+For more information regarding how I use donations, see
+[here](http://jeaye.com/donate/).
+
+## License
 Distributed under the Eclipse Public License version 1.0, just like Clojure.
