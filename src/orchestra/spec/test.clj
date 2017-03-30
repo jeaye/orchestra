@@ -30,11 +30,6 @@
   "if false, instrumented fns call straight through"
   true)
 
-(defn- fn-spec?
-  "Fn-spec must include at least :args or :ret specs."
-  [m]
-  (or (:args m) (:ret m)))
-
 (defn- no-fspec
   [v spec]
   (ex-info (str "Fn at " v " is not spec'ed.")
