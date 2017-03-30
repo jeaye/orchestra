@@ -55,3 +55,8 @@
 (deftest func
   (testing "Negative"
     (is (thrown? RuntimeException (func-no-args-spec -42)))))
+
+(deftest disabled
+  (testing "Positive"
+    (with-instrument-disabled
+      (is (func-no-args-spec -42)))))
