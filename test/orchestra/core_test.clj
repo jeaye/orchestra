@@ -32,3 +32,16 @@
     (is (ret' 42)))
   (testing "Negative"
     (is (thrown? RuntimeException (ret' true)))))
+
+(defn func'
+  [meow]
+  (Math/abs meow))
+(s/fdef func'
+        :args (s/cat :meow number?)
+        :fn #(= (:ret %) (-> % :args :meow)))
+
+(deftest func
+  (testing "Positive"
+    (is (func' 42)))
+  (testing "Negative"
+    (is (thrown? RuntimeException (func' -42)))))
