@@ -32,9 +32,9 @@ official [spec
 guide](https://clojure.org/guides/spec#_instrumentation_and_testing). In short,
 after calling `orchestra.spec.test/instrument`, every function in your codebase,
 which you've spec'd, will automatically be checked at every single invocation.
-Every argument you spec'd will be validated, along with return value specs, and
-the more powerful `:fn` specs, which operate on both the function's arguments
-and the generated return value.
+Every argument you've spec'd will be validated, along with return value specs,
+and the more powerful `:fn` specs, which operate on both the function's
+arguments and the generated return value.
 
 This magic is possible by rebinding the var, to which your spec'd functions are
 bound, with a different function which first checks all arguments, then calls
