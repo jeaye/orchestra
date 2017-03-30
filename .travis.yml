@@ -1,0 +1,21 @@
+language: clojure
+
+sudo: false
+
+os:
+  - linux
+
+cache:
+  -apt
+
+script:
+  - ./travis.sh
+
+#after_success:
+#- lein with-profile coverage cloverage --codecov
+#- bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
