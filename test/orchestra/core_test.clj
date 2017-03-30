@@ -45,3 +45,13 @@
     (is (func' 42)))
   (testing "Negative"
     (is (thrown? RuntimeException (func' -42)))))
+
+(defn func-no-args-spec
+  [meow]
+  (Math/abs meow))
+(s/fdef func-no-args-spec
+        :fn #(= (:ret %) (-> % :args :meow)))
+
+(deftest func
+  (testing "Negative"
+    (is (thrown? RuntimeException (func-no-args-spec -42)))))
