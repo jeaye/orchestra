@@ -21,14 +21,15 @@ instead of `clojure.spec.test`. No further code changes required!
 (ns kitty-ninja
   (:require [clojure.spec.test :as st]))
 
-; Begin instrumenting
-(st/instrument)
-
 ;; After
 (ns kitty-ninja
   (:require [orchestra.spec.test :as st]))
+```
 
-; Begin instrumenting (same as above!)
+Just as with vanilla Clojure, begin your instrumentation by calling:
+
+```clojure
+; Call after defining all of your specs
 (st/instrument)
 ```
 
@@ -50,7 +51,7 @@ present.
 ## When to use it
 I highly recommend having this **always on** during development and testing. You
 may have systems tests, rather than unit tests, and this can help verify that
-your data stays exactly as you intend it, throughout each transformation.
+your data stays in the exact shape you intended.
 
 ## Donate
 Feel free to shoot Bitcoins my way: **123NMGCvRZLfQJwk2AhsLMLSpCCJhCRoz6**
