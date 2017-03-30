@@ -11,6 +11,7 @@ from automatic validation; Orchestra checks all of them for you.
 Leiningen dependency:
 
 ```clojure
+;; Requires Clojure >= 1.9.0
 [orchestra "0.1.0-SNAPSHOT"]
 ```
 
