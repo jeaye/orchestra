@@ -37,15 +37,13 @@ Just as with vanilla Clojure, begin your instrumentation by calling:
 If you're not familiar with Clojure's instrumentation, it's worth reading the
 official [spec
 guide](https://clojure.org/guides/spec#_instrumentation_and_testing). In short,
-after calling `orchestra.spec.test/instrument`, every function in your codebase,
-which you've spec'd, will automatically be checked at every single invocation.
-Every argument you've spec'd will be validated, along with return value specs,
-and the more powerful `:fn` specs, which operate on both the function's
-arguments and the generated return value.
+after calling `orchestra.spec.test/instrument`, every call to a function which
+you've spec'd will have its arguments, return value, and `:fn` spec validated,
+based on the specs you've provided.
 
 This magic is possible by rebinding the var, to which your spec'd functions are
 bound, with a different function which first checks all arguments, then calls
-the original function, then checks the output and `:fn` spec, if those specs are
+the original function, then checks the `:ret` and `:fn` specs, if they're
 present.
 
 ## When to use it
