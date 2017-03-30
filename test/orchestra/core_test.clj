@@ -20,3 +20,15 @@
     (is (args' "meow")))
   (testing "Negative"
     (is (thrown? RuntimeException (args' 42)))))
+
+(defn ret'
+  [meow]
+  meow)
+(s/fdef ret'
+        :ret integer?)
+
+(deftest ret
+  (testing "Positive"
+    (is (ret' 42)))
+  (testing "Negative"
+    (is (thrown? RuntimeException (ret' true)))))
