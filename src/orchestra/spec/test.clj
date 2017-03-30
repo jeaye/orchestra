@@ -118,28 +118,30 @@ failure in instrument."
   [v f fn-spec]
   (let [fn-spec (@#'s/maybe-spec fn-spec)
         conform! (fn [v role spec data data-key]
-                   (let [conformed (s/conform spec data)]
-                     (if (= ::s/invalid conformed)
-                       (let [caller (->> (.getStackTrace (Thread/currentThread))
-                                         stacktrace-relevant-to-instrument
-                                         first)
-                             ed (merge (assoc (s/explain-data* spec [role] [] [] data)
-                                              data-key data
-                                              ::s/failure :instrument)
-                                       (when caller
-                                         {::caller (dissoc caller :class :method)}))]
-                         (throw (ex-info
-                                  (str "Call to " v " did not conform to spec:\n" (with-out-str (s/explain-out ed)))
-                                  ed)))
-                       conformed)))]
+                   (with-instrument-disabled
+                     (let [conformed (s/conform spec data)]
+                       (if (= ::s/invalid conformed)
+                         (let [caller (->> (.getStackTrace (Thread/currentThread))
+                                           stacktrace-relevant-to-instrument
+                                           first)
+                               ed (merge (assoc (s/explain-data* spec [role]
+                                                                 [] []
+                                                                 data)
+                                                data-key data
+                                                ::s/failure :instrument)
+                                         (when caller
+                                           {::caller (dissoc caller :class :method)}))]
+                           (throw (ex-info
+                                    (str "Call to " v " did not conform to spec:\n"
+                                         (with-out-str (s/explain-out ed)))
+                                    ed)))
+                         conformed))))]
     (fn
       [& args]
       (if *instrument-enabled*
-        (let [[ret cargs] (with-instrument-disabled
-                            (let [cargs (when-let [spec (:args fn-spec)]
-                                          (conform! v :args spec args ::s/args))]
-                              (binding [*instrument-enabled* true]
-                                [(.applyTo ^clojure.lang.IFn f args) cargs])))]
+        (let [cargs (when-let [spec (:args fn-spec)]
+                      (conform! v :args spec args ::s/args))
+              ret (.applyTo ^clojure.lang.IFn f args)]
           (when-let [spec (:ret fn-spec)]
             (conform! v :ret spec ret ::s/ret))
           (when-let [spec (:fn fn-spec)]
