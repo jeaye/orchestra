@@ -1,7 +1,22 @@
 (ns orchestra.core-test
   (:require [clojure.test :refer :all]
-            [orchestra.core :refer :all]))
+            [clojure.spec :as s]
+            [orchestra.spec.test :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(defn instrument-fixture [f]
+  (unstrument)
+  (instrument)
+  (f))
+(use-fixtures :each instrument-fixture)
+
+(defn args'
+  [meow]
+  true)
+(s/fdef args'
+        :args (s/cat :meow string?))
+
+(deftest args
+  (testing "Positive"
+    (is (args' "meow")))
+  (testing "Negative"
+    (is (thrown? RuntimeException (args' 42)))))
