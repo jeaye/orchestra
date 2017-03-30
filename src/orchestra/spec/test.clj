@@ -35,6 +35,16 @@
   [m]
   (or (:args m) (:ret m)))
 
+(defn- no-fspec
+  [v spec]
+  (ex-info (str "Fn at " v " is not spec'ed.")
+           {:var v :spec spec ::s/failure :no-fspec}))
+
+(defn- no-args-spec
+  [v spec]
+  (ex-info (str "Args for " v " are not spec'ed.")
+           {:var v :spec spec ::s/failure :no-args-spec}))
+
 (defmacro with-instrument-disabled
   "Disables instrument's checking of calls, within a scope."
   [& body]
@@ -115,15 +125,11 @@ failure in instrument."
           (when-let [spec (:ret fn-spec)]
             (conform! v :ret spec ret ::s/ret))
           (when-let [spec (:fn fn-spec)]
-            (conform! v :fn spec {:ret ret :args cargs} ::s/fn))
+            (if (nil? cargs)
+              (throw (no-args-spec v fn-spec))
+              (conform! v :fn spec {:ret ret :args cargs} ::s/fn)))
           ret)
         (.applyTo ^clojure.lang.IFn f args)))))
-
-
-(defn- no-fspec
-  [v spec]
-  (ex-info (str "Fn at " v " is not spec'ed.")
-           {:var v :spec spec ::s/failure :no-fspec}))
 
 (defonce ^:private instrumented-vars (atom {}))
 
