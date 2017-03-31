@@ -63,6 +63,15 @@
     (is (full' 0))
     (is (full' -10))))
 
+(defn empty'
+  [meow]
+  (Math/abs meow))
+(s/fdef empty')
+
+(deftest empty
+  (testing "Positive"
+    (is (empty' 0))))
+
 (defn func-no-args-spec
   [meow]
   (Math/abs meow))
