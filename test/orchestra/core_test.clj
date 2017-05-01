@@ -1,6 +1,6 @@
 (ns orchestra.core-test
   (:require [clojure.test :refer :all]
-            [clojure.spec :as s]
+            [clojure.spec.alpha :as s]
             [orchestra.spec.test :refer :all]))
 
 (defn instrument-fixture [f]
