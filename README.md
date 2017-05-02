@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/jeaye/orchestra.svg?branch=master)](https://travis-ci.org/jeaye/orchestra) [![codecov](https://codecov.io/gh/jeaye/orchestra/branch/master/graph/badge.svg)](https://codecov.io/gh/jeaye/orchestra) [![Clojars Project](https://img.shields.io/clojars/v/orchestra.svg)](https://clojars.org/orchestra)
 # Orchestra : complete instrumentation for clojure.spec
 Orchestra is a Clojure library made as a drop-in replacement for
-[clojure.spec.test](https://clojure.org/guides/spec), which provides custom
+[clojure.spec.test.alpha](https://clojure.org/guides/spec), which provides custom
 instrumentation that validates all aspects of function specs. By default,
 clojure.spec will only instrument `:args`.  This leaves out `:ret` and `:fn`
 from automatic validation; Orchestra checks all of them for you.
@@ -15,12 +15,12 @@ Leiningen dependency:
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
-instead of `clojure.spec.test`. No further code changes required!
+instead of `clojure.spec.test.alpha`. No further code changes required!
 
 ```clojure
 ;; Before
 (ns kitty-ninja
-  (:require [clojure.spec.test :as st]))
+  (:require [clojure.spec.test.alpha :as st]))
 
 ;; After
 (ns kitty-ninja
