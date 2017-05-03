@@ -86,8 +86,3 @@
   (testing "Positive"
     (with-instrument-disabled
       (is (func-no-args-spec -42)))))
-
-(deftest in-place-reload
-  (testing "Positive"
-    (dotimes [_ 5]
-      (require 'orchestra.spec.test :reload-all))))
