@@ -13,7 +13,8 @@ Leiningen dependency:
 ;; Depending on your Clojure version, choose one of the following. All of them
 ;; provide the same API but follow different internal spec changes.
 
-;; Requires Clojure >= 1.9.0-alpha16
+;; Requires org.clojure/clojure >= 1.9.0-alpha16
+;; Requires org.clojure/spec.alpha >= 0.1.108
 [orchestra "0.3.0"]
 
 ;; Requires 1.9.0 >= Clojure < 1.9.0-alpha16
