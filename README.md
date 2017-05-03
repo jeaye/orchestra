@@ -11,6 +11,7 @@ Leiningen dependency:
 
 ```clojure
 ;; Requires Clojure >= 1.9.0
+;; and [org.clojure/spec.alpha "0.1.108"] or higher.
 [orchestra "0.2.0"]
 ```
 
