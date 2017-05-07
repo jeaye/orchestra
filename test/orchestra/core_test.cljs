@@ -1,11 +1,16 @@
 (ns orchestra.core-test
-  (:require #?@(:clj [[clojure.test :refer :all]
-                      [clojure.spec.alpha :as s]
-                      [orchestra.spec.test :refer :all]]
-               :cljs [[cljs.test :refer-macros [deftest testing is use-fixtures]]
-                      [cljs.spec :as s]
-                      [orchestra.spec.test :refer-macros [instrument unstrument
-                                                          with-instrument-disabled]]])))
+  (:require ;#?@(:clj [[clojure.test :refer :all]
+            ;          [clojure.spec.alpha :as s]
+            ;          [orchestra.spec.test :refer :all]]
+
+            ;  :cljs [[cljs.test :refer-macros [deftest testing is use-fixtures]]
+            ;         [cljs.spec :as s]
+            ;         [orchestra.spec.test :refer-macros [instrument unstrument
+            ;                                             with-instrument-disabled]]])
+            [cljs.test :refer-macros [deftest testing is use-fixtures]]
+            [cljs.spec :as s]
+            [orchestra.spec.test :refer-macros [instrument unstrument
+                                                with-instrument-disabled]]))
 
 (defn instrument-fixture [f]
   (unstrument)
@@ -23,7 +28,7 @@
   (testing "Positive"
     (is (args' "meow")))
   (testing "Negative"
-    (is (thrown? #?(:clj RuntimeException :cljs :default)
+    (is (thrown? :default ;#?(:clj RuntimeException :cljs :default)
                  (args' 42)))))
 
 (defn ret'
@@ -36,7 +41,7 @@
   (testing "Positive"
     (is (ret' 42)))
   (testing "Negative"
-    (is (thrown? #?(:clj RuntimeException :cljs :default)
+    (is (thrown? :default ;#?(:clj RuntimeException :cljs :default)
                  (ret' true)))))
 
 (defn func'
@@ -50,7 +55,7 @@
   (testing "Positive"
     (is (func' 42)))
   (testing "Negative"
-    (is (thrown? #?(:clj RuntimeException :cljs :default)
+    (is (thrown? :default ;#?(:clj RuntimeException :cljs :default)
                  (func' -42)))))
 
 (defn full'
@@ -85,9 +90,9 @@
 (s/fdef func-no-args-spec
         :fn #(= (:ret %) (-> % :args :meow)))
 
-(deftest func
+(deftest func-negative
   (testing "Negative"
-    (is (thrown? #?(:clj RuntimeException :cljs :default)
+    (is (thrown? :default ;#?(:clj RuntimeException :cljs :default)
                  (func-no-args-spec -42)))))
 
 (deftest disabled
