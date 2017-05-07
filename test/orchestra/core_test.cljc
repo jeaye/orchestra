@@ -1,7 +1,11 @@
 (ns orchestra.core-test
-  (:require [clojure.test :refer :all]
-            [clojure.spec.alpha :as s]
-            [orchestra.spec.test :refer :all]))
+  (:require #?@(:clj [[clojure.test :refer :all]
+                      [clojure.spec.alpha :as s]
+                      [orchestra.spec.test :refer :all]]
+               :cljs [[cljs.test :refer-macros [deftest testing is use-fixtures]]
+                      [cljs.spec.alpha :as s]
+                      [orchestra.spec.test :refer-macros [instrument unstrument
+                                                          with-instrument-disabled]]])))
 
 (defn instrument-fixture [f]
   (unstrument)
@@ -19,7 +23,8 @@
   (testing "Positive"
     (is (args' "meow")))
   (testing "Negative"
-    (is (thrown? RuntimeException (args' 42)))))
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (args' 42)))))
 
 (defn ret'
   [meow]
@@ -31,7 +36,8 @@
   (testing "Positive"
     (is (ret' 42)))
   (testing "Negative"
-    (is (thrown? RuntimeException (ret' true)))))
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (ret' true)))))
 
 (defn func'
   [meow]
@@ -44,7 +50,8 @@
   (testing "Positive"
     (is (func' 42)))
   (testing "Negative"
-    (is (thrown? RuntimeException (func' -42)))))
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (func' -42)))))
 
 (defn full'
   [meow]
@@ -80,7 +87,8 @@
 
 (deftest func
   (testing "Negative"
-    (is (thrown? RuntimeException (func-no-args-spec -42)))))
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (func-no-args-spec -42)))))
 
 (deftest disabled
   (testing "Positive"
