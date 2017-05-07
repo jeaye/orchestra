@@ -3,7 +3,7 @@
                       [clojure.spec.alpha :as s]
                       [orchestra.spec.test :refer :all]]
                :cljs [[cljs.test :refer-macros [deftest testing is use-fixtures]]
-                      [cljs.spec.alpha :as s]
+                      [cljs.spec :as s]
                       [orchestra.spec.test :refer-macros [instrument unstrument
                                                           with-instrument-disabled]]])))
 

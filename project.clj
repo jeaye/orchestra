@@ -14,19 +14,21 @@
              :cljs {:dependencies []}}
   :cljsbuild {:builds
               ; TODO: Clean this up with a for
-              {:none {:source-paths ["src/cljs" "test"]
+              {:none {:source-paths ["src/cljs/" "test/"]
                       :compiler
                       {:asset-path "target/none"
                        :main orchestra.test
+                       :target "default"
                        :optimizations :none
                        :output-dir "target/none"
                        :output-to "target/none.js"}}
-               :advanced {:source-paths ["src/cljs" "test"]
+               :advanced {:source-paths ["src/cljs/" "test/"]
                           :compiler
                           {:asset-path "target/advanced"
                            :main orchestra.test
+                           :target "default"
                            :optimizations :advanced
                            :output-dir "target/advanced"
                            :output-to "target/advanced.js"
-                           :pretty-print true}} }}
+                           :pretty-print true}}}}
   :deploy-repositories [["releases" :clojars]])

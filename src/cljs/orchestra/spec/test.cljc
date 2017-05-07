@@ -7,12 +7,21 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns orchestra.spec.test
+  #?(:cljs (:require-macros [orchestra.spec.test :refer [instrument instrument-1
+                                                         unstrument unstrument-1
+                                                         with-instrument-disabled]]))
   (:require
-    [cljs.analyzer :as ana]
-    [cljs.analyzer.api :as ana-api]
-    [clojure.string :as string]
-    [cljs.spec :as s]
-    [cljs.spec.impl.gen :as gen]))
+    #?@(:cljs [[goog.object :as gobj]
+               [goog.userAgent.product :as product]
+               [cljs.stacktrace :as st]
+               [cljs.pprint :as pp]
+               [cljs.analyzer :as ana]
+               [cljs.analyzer.api :as ana-api]
+               [clojure.test.check :as stc]
+               [clojure.test.check.properties]
+               [cljs.spec :as s]
+               [cljs.spec.impl.gen :as gen]])
+    [clojure.string :as string]))
 
 (defonce ^:private instrumented-vars-macros (atom #{}))
 (defonce ^:private instrumented-vars-fns (atom {}))
@@ -21,6 +30,8 @@
   "if false, instrumented fns call straight through"
   true)
 
+#?@(:cljs
+;(declare *target*)
 (defn get-host-port []
   (if (not= "browser" *target*)
     {}
@@ -66,12 +77,6 @@
   [v spec]
   (ex-info (str "Fn at " v " is not spec'ed.")
            {:var v :spec spec ::s/failure :no-fspec}))
-
-(defmacro with-instrument-disabled
-  "Disables instrument's checking of calls, within a scope."
-  [& body]
-  `(binding [*instrument-enabled* nil]
-     ~@body))
 
 (defn- instrument-choose-spec
   "Helper for instrument"
@@ -140,14 +145,6 @@
     (swap! instrumented-vars-fns assoc v {:raw to-wrap :wrapped checked})
     checked))
 
-(defmacro instrument-1
-  [[quote s] opts]
-  (when-let [v (ana-api/resolve &env s)]
-    (swap! instrumented-vars-macros conj (:name v))
-    `(let [checked# (instrument-1* ~s (var ~s) ~opts)]
-       (when checked# (set! ~s checked#))
-       '~(:name v))))
-
 (defn- unstrument-1*
   [s v]
   (when v
@@ -156,15 +153,6 @@
       (let [current @v]
         (when (= wrapped current)
           raw)))))
-
-(defmacro unstrument-1
-  [[quote s]]
-  (when-let [v (ana-api/resolve &env s)]
-    (when (@instrumented-vars-macros (:name v))
-      (swap! instrumented-vars-macros disj (:name v))
-      `(let [raw# (unstrument-1* ~s (var ~s))]
-         (when raw# (set! ~s raw#))
-         '~(:name v)))))
 
 (defn- sym-or-syms->syms [sym-or-syms]
   (into []
@@ -191,74 +179,102 @@
                      (keys (:spec opts))
                      (:stub opts)
                      (keys (:replace opts))])))
+)
 
-(defmacro instrument
-  "Instruments the vars named by sym-or-syms, a symbol or collection
-   of symbols, or all instrumentable vars if sym-or-syms is not
-   specified. If a symbol identifies a namespace then all symbols in that
-   namespace will be enumerated.
-   If a var has an :args fn-spec, sets the var's root binding to a
-   fn that checks arg conformance (throwing an exception on failure)
-   before delegating to the original fn.
-   The opts map can be used to override registered specs, and/or to
-   replace fn implementations entirely. Opts for symbols not included
-   in sym-or-syms are ignored. This facilitates sharing a common
-   options map across many different calls to instrument.
-   The opts map may have the following keys:
-   :spec     a map from var-name symbols to override specs
-   :stub     a set of var-name symbols to be replaced by stubs
-   :gen      a map from spec names to generator overrides
-   :replace  a map from var-name symbols to replacement fns
-   :spec overrides registered fn-specs with specs your provide. Use
-   :spec overrides to provide specs for libraries that do not have
-   them, or to constrain your own use of a fn to a subset of its
-   spec'ed contract.
-   :stub replaces a fn with a stub that checks :args, then uses the
-   :ret spec to generate a return value.
-   :gen overrides are used only for :stub generation.
-   :replace replaces a fn with a fn that checks args conformance, then
-   invokes the fn you provide, enabling arbitrary stubbing and mocking.
-   :spec can be used in combination with :stub or :replace.
-   Returns a collection of syms naming the vars instrumented."
-  ([]
-   `(instrument '[~@(#?(:clj  s/speced-vars
-                        :cljs cljs.spec$macros/speced-vars))]))
-  ([xs]
-   `(instrument ~xs nil))
-  ([sym-or-syms opts]
-   (let [syms (sym-or-syms->syms (eval sym-or-syms))
-         opts-sym (gensym "opts")]
-     `(let [~opts-sym ~opts]
-        (reduce
-          (fn [ret# [_# f#]]
-            (let [sym# (f#)]
-              (cond-> ret# sym# (conj sym#))))
-          []
-          (->> (zipmap '~syms
-                       [~@(map
-                            (fn [sym]
-                              `(fn [] (instrument-1 '~sym ~opts-sym)))
-                            syms)])
-               (filter #((instrumentable-syms ~opts-sym) (first %)))
-               (distinct-by first)))))))
+#?(:clj
+   (defmacro with-instrument-disabled
+     "Disables instrument's checking of calls, within a scope."
+     [& body]
+     `(binding [*instrument-enabled* nil]
+        ~@body)))
 
-(defmacro unstrument
-  "Undoes instrument on the vars named by sym-or-syms, specified
-   as in instrument. With no args, unstruments all instrumented vars.
-   Returns a collection of syms naming the vars unstrumented."
-  ([]
-   `(unstrument '[~@(deref instrumented-vars-macros)]))
-  ([sym-or-syms]
-   (let [syms (sym-or-syms->syms (eval sym-or-syms))]
-     `(reduce
-        (fn [ret# f#]
-          (let [sym# (f#)]
-            (cond-> ret# sym# (conj sym#))))
-        []
-        [~@(->> syms
-                (map
-                  (fn [sym]
-                    (when (symbol? sym)
-                      `(fn []
-                         (unstrument-1 '~sym)))))
-                (remove nil?))]))))
+#?(:clj
+   (defmacro instrument-1
+     [[quote s] opts]
+     (when-let [v (ana-api/resolve &env s)]
+       (swap! instrumented-vars-macros conj (:name v))
+       `(let [checked# (instrument-1* ~s (var ~s) ~opts)]
+          (when checked# (set! ~s checked#))
+          '~(:name v)))))
+
+#?(:clj
+   (defmacro unstrument-1
+     [[quote s]]
+     (when-let [v (ana-api/resolve &env s)]
+       (when (@instrumented-vars-macros (:name v))
+         (swap! instrumented-vars-macros disj (:name v))
+         `(let [raw# (unstrument-1* ~s (var ~s))]
+            (when raw# (set! ~s raw#))
+            '~(:name v))))))
+
+#?(:clj
+   (defmacro instrument
+     "Instruments the vars named by sym-or-syms, a symbol or collection
+      of symbols, or all instrumentable vars if sym-or-syms is not
+      specified. If a symbol identifies a namespace then all symbols in that
+      namespace will be enumerated.
+      If a var has an :args fn-spec, sets the var's root binding to a
+      fn that checks arg conformance (throwing an exception on failure)
+      before delegating to the original fn.
+      The opts map can be used to override registered specs, and/or to
+      replace fn implementations entirely. Opts for symbols not included
+      in sym-or-syms are ignored. This facilitates sharing a common
+      options map across many different calls to instrument.
+      The opts map may have the following keys:
+      :spec     a map from var-name symbols to override specs
+      :stub     a set of var-name symbols to be replaced by stubs
+      :gen      a map from spec names to generator overrides
+      :replace  a map from var-name symbols to replacement fns
+      :spec overrides registered fn-specs with specs your provide. Use
+      :spec overrides to provide specs for libraries that do not have
+      them, or to constrain your own use of a fn to a subset of its
+      spec'ed contract.
+      :stub replaces a fn with a stub that checks :args, then uses the
+      :ret spec to generate a return value.
+      :gen overrides are used only for :stub generation.
+      :replace replaces a fn with a fn that checks args conformance, then
+      invokes the fn you provide, enabling arbitrary stubbing and mocking.
+      :spec can be used in combination with :stub or :replace.
+      Returns a collection of syms naming the vars instrumented."
+     ([]
+      `(instrument '[~@(cljs.spec$macros/speced-vars)]))
+     ([xs]
+      `(instrument ~xs nil))
+     ([sym-or-syms opts]
+      (let [syms (sym-or-syms->syms (eval sym-or-syms))
+            opts-sym (gensym "opts")]
+        `(let [~opts-sym ~opts]
+           (reduce
+             (fn [ret# [_# f#]]
+               (let [sym# (f#)]
+                 (cond-> ret# sym# (conj sym#))))
+             []
+             (->> (zipmap '~syms
+                          [~@(map
+                               (fn [sym]
+                                 `(fn [] (instrument-1 '~sym ~opts-sym)))
+                               syms)])
+                  (filter #((instrumentable-syms ~opts-sym) (first %)))
+                  (distinct-by first))))))))
+
+#?(:clj
+   (defmacro unstrument
+     "Undoes instrument on the vars named by sym-or-syms, specified
+      as in instrument. With no args, unstruments all instrumented vars.
+      Returns a collection of syms naming the vars unstrumented."
+     ([]
+      `(unstrument '[~@(deref instrumented-vars-macros)]))
+     ([sym-or-syms]
+      (let [syms (sym-or-syms->syms (eval sym-or-syms))]
+        `(reduce
+           (fn [ret# f#]
+             (let [sym# (f#)]
+               (cond-> ret# sym# (conj sym#))))
+           []
+           [~@(->> syms
+                   (map
+                     (fn [sym]
+                       (when (symbol? sym)
+                         `(fn []
+                            (unstrument-1 '~sym)))))
+                   (remove nil?))])))))
