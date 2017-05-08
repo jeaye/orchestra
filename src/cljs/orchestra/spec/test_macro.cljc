@@ -6,7 +6,7 @@
 ;   the terms of this license.
 ;   You must not remove this notice, or any other, from this software.
 
-(ns orchestra.spec.test
+(ns orchestra.spec.test-macro
   (:require
     [cljs.analyzer :as ana]
     [cljs.analyzer.api :as ana-api]
@@ -157,108 +157,3 @@ Returns a collection of syms naming the vars unstrumented."
                    `(fn []
                       (unstrument-1 '~sym)))))
              (remove nil?))]))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; testing  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmacro check-1
-  [[quote s :as qs] f spec opts]
-  (let [{:keys [name] :as v} (when qs (ana-api/resolve &env s))]
-    `(let [s#        '~name
-           opts#     ~opts
-           v#        ~(when v `(var ~name))
-           spec#     (or ~spec ~(when v `(s/get-spec (var ~name))))
-           re-inst?# (and v# (seq (unstrument '~name)) true)
-           f#        (or ~f (when v# @v#))]
-       (try
-         (cond
-           (nil? f#)
-           {:failure (ex-info "No fn to spec" {::s/failure :no-fn})
-            :sym     s# :spec spec#}
-
-           (:args spec#)
-           (let [tcret# (quick-check f# spec# opts#)]
-             (make-check-result s# spec# tcret#))
-
-           :default
-           {:failure (ex-info "No :args spec" {::s/failure :no-args-spec})
-            :sym     s# :spec spec#})
-         (finally
-           (when re-inst?# (instrument '~name)))))))
-
-(defmacro check-fn
-  "Runs generative tests for fn f using spec and opts. See
-'check' for options and return."
-  ([f spec]
-   `(check-fn ~f ~spec nil))
-  ([f spec opts]
-   `(let [opts# ~opts]
-      (validate-check-opts opts#)
-      (check-1 nil ~f ~spec opts#))))
-
-(defn checkable-syms*
-  ([]
-    (checkable-syms* nil))
-  ([opts]
-   (reduce into #{}
-     [(filter fn-spec-name? (keys @s/registry-ref))
-      (keys (:spec opts))])))
-
-(defmacro checkable-syms
-  "Given an opts map as per check, returns the set of syms that
-can be checked."
-  ([]
-   `(checkable-syms nil))
-  ([opts]
-   `(let [opts# ~opts]
-      (validate-check-opts opts#)
-      (reduce conj #{}
-        '[~@(filter fn-spec-name? (keys @s/registry-ref))
-          ~@(keys (:spec opts))]))))
-
-(defmacro check
-  "Run generative tests for spec conformance on vars named by
-sym-or-syms, a symbol or collection of symbols. If sym-or-syms
-is not specified, check all checkable vars. If a symbol identifies a
-namespace then all symbols in that namespace will be enumerated.
-
-The opts map includes the following optional keys, where stc
-aliases clojure.test.check:
-
-::stc/opts  opts to flow through test.check/quick-check
-:gen        map from spec names to generator overrides
-
-The ::stc/opts include :num-tests in addition to the keys
-documented by test.check. Generator overrides are passed to
-spec/gen when generating function args.
-
-Returns a lazy sequence of check result maps with the following
-keys
-
-:spec       the spec tested
-:sym        optional symbol naming the var tested
-:failure    optional test failure
-::stc/ret   optional value returned by test.check/quick-check
-
-The value for :failure can be any exception. Exceptions thrown by
-spec itself will have an ::s/failure value in ex-data:
-
-:check-failed   at least one checked return did not conform
-:no-args-spec   no :args spec provided
-:no-fn          no fn provided
-:no-fspec       no fspec provided
-:no-gen         unable to generate :args
-:instrument     invalid args detected by instrument
-"
-  ([]
-   `(check '~(checkable-syms*)))
-  ([sym-or-syms]
-   `(check ~sym-or-syms nil))
-  ([sym-or-syms opts]
-   (let [syms (sym-or-syms->syms (eval sym-or-syms))
-         opts-sym (gensym "opts")]
-     `(let [~opts-sym ~opts]
-        [~@(->> syms
-             (filter (checkable-syms* opts))
-             (map
-               (fn [sym]
-                 (do `(check-1 '~sym nil nil ~opts-sym)))))]))))

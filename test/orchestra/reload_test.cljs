@@ -8,8 +8,9 @@
             ;                                              with-instrument-disabled]]])
             [cljs.test :refer-macros [deftest testing is use-fixtures]]
             [cljs.spec :as s]
-            [orchestra.spec.test :refer-macros [instrument unstrument
-                                                with-instrument-disabled]]))
+            ;[orchestra.spec.test :refer [instrument unstrument
+            ;                             with-instrument-disabled]]
+            ))
 
 ;(deftest in-place-reload
 ;  (testing "Positive"

@@ -1,4 +1,6 @@
 (ns orchestra.core-test
+  ;(:require-macros [orchestra.spec.test])
+  ;(:require-macros [orchestra.spec.test :as orchestra])
   (:require ;#?@(:clj [[clojure.test :refer :all]
             ;          [clojure.spec.alpha :as s]
             ;          [orchestra.spec.test :refer :all]]
@@ -9,12 +11,13 @@
             ;                                             with-instrument-disabled]]])
             [cljs.test :refer-macros [deftest testing is use-fixtures]]
             [cljs.spec :as s]
-            [orchestra.spec.test :refer-macros [instrument unstrument
-                                                with-instrument-disabled]]))
+            [orchestra.spec.test :as orchestra :include-macros true]
+            ))
 
 (defn instrument-fixture [f]
-  (unstrument)
-  (instrument)
+  ;(println s/speced-vars)
+  (orchestra/unstrument)
+  (orchestra/instrument)
   (f))
 (use-fixtures :each instrument-fixture)
 
@@ -97,5 +100,5 @@
 
 (deftest disabled
   (testing "Positive"
-    (with-instrument-disabled
+    (orchestra.spec.test/with-instrument-disabled
       (is (func-no-args-spec -42)))))
