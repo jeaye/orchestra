@@ -86,3 +86,18 @@
   (testing "Positive"
     (with-instrument-disabled
       (is (func-no-args-spec -42)))))
+
+(defn func-or-return'
+  [meow]
+  (if meow
+    "meow"
+    :meow))
+(s/fdef func-or-return'
+        :args (s/cat :meow boolean?)
+        :ret (s/or :string string?
+                   :keyword keyword?))
+
+(deftest func-or-return
+  (testing "Positive"
+    (is (= "meow" (func-or-return' true)))
+    (is (= :meow (func-or-return' false)))))
