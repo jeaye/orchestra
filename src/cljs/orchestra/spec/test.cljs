@@ -7,15 +7,31 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns orchestra.spec.test
-  (:require-macros [orchestra.spec.test-macro])
+  (:require-macros [orchestra.spec.test :as m
+                    :refer [instrument unstrument with-instrument-disabled]])
   (:require
     [goog.object :as gobj]
     [goog.userAgent.product :as product]
     [clojure.string :as string]
     [cljs.stacktrace :as st]
     [cljs.pprint :as pp]
-    [cljs.spec :as s]
-    [cljs.spec.impl.gen :as gen]))
+    [cljs.spec.alpha :as s]
+    [cljs.spec.gen.alpha :as gen]
+    [clojure.test.check :as stc]
+    [clojure.test.check.properties]))
+
+(defn distinct-by
+  ([f coll]
+   (let [step (fn step [xs seen]
+                (lazy-seq
+                  ((fn [[x :as xs] seen]
+                     (when-let [s (seq xs)]
+                       (let [v (f x)]
+                         (if (contains? seen v)
+                           (recur (rest s) seen)
+                           (cons x (step (rest s) (conj seen v)))))))
+                    xs seen)))]
+     (step coll #{}))))
 
 (defn ->sym
   [x]
@@ -26,10 +42,6 @@
 (def ^:private ^:dynamic *instrument-enabled*
   "if false, instrumented fns call straight through"
   true)
-
-(defn junk []
-  (orchestra.spec.test/instrument)
-  (orchestra.spec.test/unstrument))
 
 (defn get-host-port []
   (if (not= "browser" *target*)
@@ -97,7 +109,7 @@
       (fn
         [& args]
         (if *instrument-enabled*
-          (orchestra.spec.test/with-instrument-disabled
+          (with-instrument-disabled
             (when (:args fn-spec) (conform! v :args (:args fn-spec) args args))
             (binding [*instrument-enabled* true]
               (apply f args)))
@@ -165,3 +177,186 @@ that can be instrumented."
                      (keys (:spec opts))
                      (:stub opts)
                      (keys (:replace opts))])))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; testing  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- explain-check
+  [args spec v role]
+  (ex-info
+    "Specification-based check failed"
+    (when-not (s/valid? spec v nil)
+      (assoc (s/explain-data* spec [role] [] [] v)
+        ::args args
+        ::val v
+        ::s/failure :check-failed))))
+
+(defn- check-call
+  "Returns true if call passes specs, otherwise *returns* an exception
+with explain-data + ::s/failure."
+  [f specs args]
+  (let [cargs (when (:args specs) (s/conform (:args specs) args))]
+    (if (= cargs ::s/invalid)
+      (explain-check args (:args specs) args :args)
+      (let [ret (apply f args)
+            cret (when (:ret specs) (s/conform (:ret specs) ret))]
+        (if (= cret ::s/invalid)
+          (explain-check args (:ret specs) ret :ret)
+          (if (and (:args specs) (:ret specs) (:fn specs))
+            (if (s/valid? (:fn specs) {:args cargs :ret cret})
+              true
+              (explain-check args (:fn specs) {:args cargs :ret cret} :fn))
+            true))))))
+
+(defn- quick-check
+  [f specs {gen :gen opts ::stc/opts}]
+  (let [{:keys [num-tests] :or {num-tests 1000}} opts
+        g (try (s/gen (:args specs) gen) (catch js/Error t t))]
+    (if (instance? js/Error g)
+      {:result g}
+      (let [prop (gen/for-all* [g] #(check-call f specs %))]
+        (apply gen/quick-check num-tests prop (mapcat identity opts))))))
+
+(defn- make-check-result
+  "Builds spec result map."
+  [check-sym spec test-check-ret]
+  (merge {:spec spec
+          ::stc/ret test-check-ret}
+    (when check-sym
+      {:sym check-sym})
+    (when-let [result (-> test-check-ret :result)]
+      (when-not (true? result) {:failure result}))
+    (when-let [shrunk (-> test-check-ret :shrunk)]
+      {:failure (:result shrunk)})))
+
+(defn- validate-check-opts
+  [opts]
+  (assert (every? ident? (keys (:gen opts))) "check :gen expects ident keys"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; check reporting  ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- failure-type
+  [x]
+  (::s/failure (ex-data x)))
+
+(defn- unwrap-failure
+  [x]
+  (if (failure-type x)
+    (ex-data x)
+    x))
+
+(defn- result-type
+  "Returns the type of the check result. This can be any of the
+::s/failure keywords documented in 'check', or:
+
+  :check-passed   all checked fn returns conformed
+  :check-threw    checked fn threw an exception"
+  [ret]
+  (let [failure (:failure ret)]
+    (cond
+      (nil? failure) :check-passed
+      (failure-type failure) (failure-type failure)
+      :default :check-threw)))
+
+(defn abbrev-result
+  "Given a check result, returns an abbreviated version
+suitable for summary use."
+  [x]
+  (if (:failure x)
+    (-> (dissoc x ::stc/ret)
+      (update :spec s/describe)
+      (update :failure unwrap-failure))
+    (dissoc x :spec ::stc/ret)))
+
+(defn summarize-results
+  "Given a collection of check-results, e.g. from 'check', pretty
+prints the summary-result (default abbrev-result) of each.
+
+Returns a map with :total, the total number of results, plus a
+key with a count for each different :type of result."
+  ([check-results] (summarize-results check-results abbrev-result))
+  ([check-results summary-result]
+   (reduce
+     (fn [summary result]
+       (pp/pprint (summary-result result))
+       (-> summary
+         (update :total inc)
+         (update (result-type result) (fnil inc 0))))
+     {:total 0}
+     check-results)))
+
+(comment
+  (require
+    '[cljs.pprint :as pp]
+    '[cljs.spec :as s]
+    '[cljs.spec.gen :as gen]
+    '[cljs.test :as ctest])
+
+  (require :reload '[orchestra.spec.test :as test])
+
+  ;; discover speced vars for your own test runner
+  (s/speced-vars)
+
+  ;; check a single var
+  (test/check-var #'-)
+  (test/check-var #'+)
+  (test/check-var #'clojure.spec.broken-specs/throwing-fn)
+
+  ;; old style example tests
+  (ctest/run-all-tests)
+
+  (s/speced-vars 'clojure.spec.correct-specs)
+  ;; new style spec tests return same kind of map
+  (test/check-var #'subs)
+  (orchestra.spec.test/run-tests 'clojure.core)
+  (test/run-all-tests)
+
+  ;; example evaluation
+  (defn ranged-rand
+    "Returns random int in range start <= rand < end"
+    [start end]
+    (+ start (long (rand (- end start)))))
+
+  (s/fdef ranged-rand
+    :args (s/and (s/cat :start int? :end int?)
+                 #(< (:start %) (:end %)))
+    :ret  int?
+    :fn   (s/and #(>= (:ret %) (-> % :args :start))
+                 #(< (:ret %) (-> % :args :end))))
+
+  (instrumentable-syms)
+
+  (m/instrument-1 `ranged-rand {})
+  (m/unstrument-1 `ranged-rand)
+
+  (m/instrument)
+  (m/instrument `ranged-rand)
+  (m/instrument `[ranged-rand])
+
+  (m/unstrument)
+  (m/unstrument `ranged-rand)
+  (m/unstrument `[ranged-rand])
+
+  (ranged-rand 8 5)
+  (defn foo
+    ([a])
+    ([a b]
+     (ranged-rand 8 5)))
+  (foo 1 2)
+  (m/unstrument-1 `ranged-rand)
+
+  (m/check-1 `ranged-rand nil nil {})
+
+  (m/check-fn inc
+    (s/fspec
+      :args (s/cat :x int?)
+      :ret  int?))
+
+  (m/checkable-syms)
+
+  (m/check `ranged-rand)
+  )
+
+
+
+
+
