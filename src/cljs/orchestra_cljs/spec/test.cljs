@@ -16,8 +16,7 @@
     [cljs.stacktrace :as st]
     [cljs.pprint :as pp]
     [cljs.spec.alpha :as s]
-    [cljs.spec.gen.alpha :as gen]
-    [clojure.test.check.properties]))
+    [cljs.spec.gen.alpha :as gen]))
 
 (defn distinct-by
   ([f coll]
