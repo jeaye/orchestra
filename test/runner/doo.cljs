@@ -1,5 +1,7 @@
 (ns runner.doo
-  (:require [doo.runner :refer-macros [doo-all-tests]]
-            orchestra.test))
+  (:require [doo.runner :refer-macros [doo-tests]]
+            orchestra-cljs.core-test
+            orchestra-cljs.reload-test))
 
-(doo-all-tests #"(orchestra)\..*-test")
+(doo-tests 'orchestra-cljs.core-test
+           'orchestra-cljs.reload-test)

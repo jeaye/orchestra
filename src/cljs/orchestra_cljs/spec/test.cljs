@@ -6,8 +6,8 @@
 ;   the terms of this license.
 ;   You must not remove this notice, or any other, from this software.
 
-(ns orchestra.spec.test
-  (:require-macros [orchestra.spec.test :as m
+(ns orchestra-cljs.spec.test
+  (:require-macros [orchestra-cljs.spec.test :as m
                     :refer [instrument unstrument with-instrument-disabled]])
   (:require
     [goog.object :as gobj]

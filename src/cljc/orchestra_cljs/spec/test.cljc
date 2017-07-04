@@ -6,7 +6,7 @@
 ;   the terms of this license.
 ;   You must not remove this notice, or any other, from this software.
 
-(ns orchestra.spec.test
+(ns orchestra-cljs.spec.test
   (:require
     [cljs.analyzer :as ana]
     [cljs.analyzer.api :as ana-api]
@@ -29,7 +29,7 @@
 (defmacro with-instrument-disabled
   "Disables instrument's checking of calls, within a scope."
   [& body]
-  `(binding [*instrument-enabled* nil]
+  `(binding [orchestra-cljs.spec.test/*instrument-enabled* nil]
      ~@body))
 
 (defmacro instrument-1

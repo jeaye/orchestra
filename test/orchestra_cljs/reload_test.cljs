@@ -1,4 +1,4 @@
-(ns orchestra.reload-test
+(ns orchestra-cljs.reload-test
   (:require ;#?@(:clj [[clojure.test :refer :all]
             ;          [clojure.spec.alpha :as s]
             ;          [orchestra.spec.test :refer :all]]
