@@ -82,7 +82,7 @@
 (defn- spec-checking-fn
   [v f fn-spec]
   (let [fn-spec (@#'s/maybe-spec fn-spec)
-        conform! (fn [v role spec data args]
+        conform! (fn [v role spec data data-key]
                    (let [conformed (s/conform spec data)]
                      (if (= ::s/invalid conformed)
                        (let [caller (find-caller
@@ -91,12 +91,13 @@
                                         (.-stack (js/Error.))
                                         (get-env) nil))
                              ed (merge (assoc (s/explain-data* spec [role] [] [] data)
-                                              ::s/args args
+                                              data-key data
                                               ::s/failure :instrument)
                                        (when caller
                                          {::caller caller}))]
                          (throw (ex-info
-                                  (str "Call to " v " did not conform to spec:\n" (with-out-str (s/explain-out ed)))
+                                  (str "Call to " v " did not conform to spec:\n"
+                                       (with-out-str (s/explain-out ed)))
                                   ed)))
                        conformed)))]
     (doto
