@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/jeaye/orchestra.svg?branch=master)](https://travis-ci.org/jeaye/orchestra) [![codecov](https://codecov.io/gh/jeaye/orchestra/branch/master/graph/badge.svg)](https://codecov.io/gh/jeaye/orchestra) [![Clojars Project](https://img.shields.io/clojars/v/orchestra.svg)](https://clojars.org/orchestra)
 # Orchestra : complete instrumentation for clojure.spec
-Orchestra is a Clojure library made as a drop-in replacement for
+Orchestra is a Clojure(Script) library made as a drop-in replacement for
 [clojure.spec.test.alpha](https://clojure.org/guides/spec), which provides custom
 instrumentation that validates all aspects of function specs. By default,
 clojure.spec will only instrument `:args`.  This leaves out `:ret` and `:fn`
@@ -13,11 +13,16 @@ Leiningen dependency:
 ;; Depending on your Clojure version, choose one of the following. All of them
 ;; provide the same API but follow different internal spec changes.
 
-;; Requires org.clojure/clojure >= 1.9.0-alpha16
-;; Requires org.clojure/spec.alpha >= 0.1.108
+;; Clojure requirements
+;;    org.clojure/clojure >= 1.9.0-alpha16
+;;    org.clojure/spec.alpha >= 0.1.108
+;;
+;; ClojureScript requirements
+;;    org.clojure/clojurescript >= 1.9.671
 [orchestra "0.3.0"]
 
 ;; Requires 1.9.0 >= Clojure < 1.9.0-alpha16
+;; Does not support ClojureScript
 [orchestra "0.2.0"]
 ```
 
@@ -29,9 +34,13 @@ instead of `clojure.spec.test.alpha`. No further code changes required!
 (ns kitty-ninja
   (:require [clojure.spec.test.alpha :as st]))
 
-;; After
+;; Clojure: After
 (ns kitty-ninja
   (:require [orchestra.spec.test :as st]))
+
+;; ClojureScript: After
+(ns kitty-ninja
+  (:require [orchestra-cljs.spec.test :as st]))
 ```
 
 Just as with vanilla Clojure, begin your instrumentation by calling:
