@@ -2,6 +2,7 @@
 
 ### Changes
 
+- Use date for versioning
 - Add ClojureScript support [#5](https://github.com/jeaye/orchestra/issues/5)
 
 ## 0.3.0
