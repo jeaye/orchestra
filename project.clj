@@ -17,13 +17,12 @@
   :source-paths ["src/clj/"
                  "test/clj/" "test/cljc/"]
   :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "test" "once"]}
-              ; TODO: Test also with optimizations
               :builds {:test {:source-paths ["src/cljs/"
                                              "test/cljs/" "test/cljc/"]
                               :compiler
                               {:main orchestra-cljs.test
                                :target :nodejs
-                               :optimizations :none
+                               :optimizations :advanced
                                :parallel-build true
                                :output-dir "target/test"
                                :output-to "target/test.js"}}}}
