@@ -3,11 +3,10 @@
   :url "https://github.com/jeaye/orchestra"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
-                 [org.clojure/clojurescript "1.9.671"]
-                 [org.clojure/spec.alpha "0.1.123"]
-                 [org.clojure/test.check "0.10.0-alpha2"]
-                 [lein-doo "0.1.7"]]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha17" :scope "provided"]
+                 [org.clojure/clojurescript "1.9.671" :scope "provided"]
+                 [org.clojure/spec.alpha "0.1.123" :scope "provided"]
+                 [org.clojure/test.check "0.10.0-alpha2"]]
   :plugins [[lein-cloverage "1.0.9"]
             [lein-cljsbuild "1.1.6"]
             [lein-figwheel "0.5.10"]
@@ -16,6 +15,7 @@
   :global-vars {*warn-on-reflection* true}
   :source-paths ["src/clj/"
                  "test/clj/" "test/cljc/"]
+  :profiles {:dev {:dependencies [[lein-doo "0.1.7"]]}}
   :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "test" "once"]}
               :builds {:test {:source-paths ["src/cljs/"
                                              "test/cljs/" "test/cljc/"]
