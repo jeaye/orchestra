@@ -5,8 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha17" :scope "provided"]
                  [org.clojure/clojurescript "1.9.671" :scope "provided"]
-                 [org.clojure/spec.alpha "0.1.123" :scope "provided"]
-                 [org.clojure/test.check "0.10.0-alpha2"]]
+                 [org.clojure/spec.alpha "0.1.123" :scope "provided"]]
   :plugins [[lein-cloverage "1.0.9"]
             [lein-cljsbuild "1.1.6"]
             [lein-figwheel "0.5.10"]

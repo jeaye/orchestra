@@ -17,7 +17,6 @@
     [cljs.pprint :as pp]
     [cljs.spec.alpha :as s]
     [cljs.spec.gen.alpha :as gen]
-    [clojure.test.check :as stc]
     [clojure.test.check.properties]))
 
 (defn distinct-by
