@@ -33,6 +33,16 @@
                     xs seen)))]
      (step coll #{}))))
 
+(defn- no-fspec
+  [v spec]
+  (ex-info (str "Fn at " v " is not spec'ed.")
+           {:var v :spec spec ::s/failure :no-fspec}))
+
+(defn- no-args-spec
+  [v spec]
+  (ex-info (str "Args for " v " are not spec'ed.")
+           {:var v :spec spec ::s/failure :no-args-spec}))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; instrument ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def ^:private ^:dynamic *instrument-enabled*
@@ -95,16 +105,19 @@
         [& args]
         (if *instrument-enabled*
           (with-instrument-disabled
-            (when (:args fn-spec) (conform! v :args (:args fn-spec) args args))
-            (binding [*instrument-enabled* true]
-              (apply f args)))
+            (let [cargs (when (:args fn-spec)
+                          (conform! v :args (:args fn-spec) args ::s/args))
+                  ret (binding [*instrument-enabled* true]
+                        (apply f args))]
+              (when (:ret fn-spec)
+                (conform! v :ret (:ret fn-spec) ret ::s/ret))
+              (when-let [spec (:fn fn-spec)]
+                (if (nil? cargs)
+                  (throw (no-args-spec v fn-spec))
+                  (conform! v :fn spec {:ret ret :args cargs} ::s/fn)))
+              ret))
           (apply f args)))
       (gobj/extend f))))
-
-(defn- no-fspec
-  [v spec]
-  (ex-info (str "Fn at " v " is not spec'ed.")
-           {:var v :spec spec ::s/failure :no-fspec}))
 
 (defonce ^:private instrumented-vars (atom {}))
 
