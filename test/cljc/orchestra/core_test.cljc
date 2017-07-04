@@ -31,7 +31,7 @@
 
 (deftest ret
   (testing "Positive"
-    (is (ret' 42)))
+    (is (= 42 (ret' 42))))
   (testing "Negative"
     (is (thrown? #?(:clj RuntimeException :cljs :default)
                  (ret' true)))))
@@ -45,7 +45,7 @@
 
 (deftest func
   (testing "Positive"
-    (is (func' 42)))
+    (is (= 42 (func' 42))))
   (testing "Negative"
     (is (thrown? #?(:clj RuntimeException :cljs :default)
                  (func' -42)))))
