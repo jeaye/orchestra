@@ -14,11 +14,11 @@
             [lein-doo "0.1.7"]]
   :hooks [leiningen.cljsbuild]
   :global-vars {*warn-on-reflection* true}
-  :source-paths ["src/clj/" "src/cljc/"
+  :source-paths ["src/clj/"
                  "test/clj/" "test/cljc/"]
   :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "test" "once"]}
               ; TODO: Test also with optimizations
-              :builds {:test {:source-paths ["src/cljs/" "src/cljc/"
+              :builds {:test {:source-paths ["src/cljs/"
                                              "test/cljs/" "test/cljc/"]
                               :compiler
                               {:main orchestra-cljs.test
