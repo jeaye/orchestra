@@ -1,3 +1,9 @@
+## 2017.07.04
+
+### Changes
+
+- Add ClojureScript support [#5](https://github.com/jeaye/orchestra/issues/5)
+
 ## 0.3.0
 
 ### Changes
