@@ -12,20 +12,23 @@
             [lein-doo "0.1.7"]]
   :hooks [leiningen.cljsbuild]
   :global-vars {*warn-on-reflection* true}
-  :source-paths ["src/clj/" "src/cljs/"]
-  :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "test" "once"]}
-              :builds {:test
-                       {:source-paths ["test/cljs/" "test/cljc/"
-                                       "src/cljs/"]
+  :source-paths ["src/clj/"]
+  :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "app" "once"]}
+              :builds {:app
+                       {:source-paths ["src/cljs/"]
                         :compiler
-                        {:main orchestra-cljs.test
-                         :target :nodejs
-                         :optimizations :advanced
+                        {:optimizations :advanced
                          :pretty-print false
                          :parallel-build true
                          :output-dir "target/test"
                          :output-to "target/test.js"}}}}
-  :profiles {:dev {:dependencies [[lein-doo "0.1.7"]]
-                   :source-paths ["test/clj/" "test/cljc/"]}}
+  :profiles {:uberjar {:aot :all}
+             :dev {:dependencies [[lein-doo "0.1.7"]]
+                   :source-paths ["test/clj/" "test/cljc/"]
+                   :cljsbuild {:builds {:app
+                                        {:source-paths ["test/cljs/" "test/cljc/"]
+                                         :compiler
+                                         {:main orchestra-cljs.test
+                                          :target :nodejs}}}}}}
 
   :deploy-repositories [["releases" :clojars]])
