@@ -12,7 +12,7 @@
             [lein-doo "0.1.7"]]
   :hooks [leiningen.cljsbuild]
   :global-vars {*warn-on-reflection* true}
-  :source-paths ["src/clj/"]
+  :source-paths ["src/clj/" "src/cljs/"]
   :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "app" "once"]}
               :builds {:app
                        {:source-paths ["src/cljs/"]
