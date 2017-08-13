@@ -1,3 +1,9 @@
+## 2017.08.13
+
+### Changes
+
+- Provide `:via` to `s/explain-data` [#7](https://github.com/jeaye/orchestra/issues/7)
+
 ## 2017.07.04
 
 ### Changes
