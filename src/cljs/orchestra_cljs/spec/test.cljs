@@ -79,8 +79,8 @@
 ;; TODO: check ::caller result in other browsers - David
 
 (defn- spec-checking-fn
-  [v f fn-spec]
-  (let [fn-spec (@#'s/maybe-spec fn-spec)
+  [v f raw-fn-spec]
+  (let [fn-spec (@#'s/maybe-spec raw-fn-spec)
         conform! (fn [v role spec data data-key]
                    (let [conformed (s/conform spec data)]
                      (if (= ::s/invalid conformed)
@@ -89,7 +89,13 @@
                                         (get-host-port)
                                         (.-stack (js/Error.))
                                         (get-env) nil))
-                             ed (merge (assoc (s/explain-data* spec [role] [] [] data)
+                             via (if-some [n (#'s/spec-name spec)]
+                                   [n]
+                                   [])
+                             ed (merge (assoc (s/explain-data* spec [role]
+                                                               via
+                                                               []
+                                                               data)
                                               data-key data
                                               ::s/failure :instrument)
                                        (when caller

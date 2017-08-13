@@ -90,8 +90,8 @@ failure in instrument."
               elems)))
 
 (defn- spec-checking-fn
-  [v f fn-spec]
-  (let [fn-spec (@#'s/maybe-spec fn-spec)
+  [v f raw-fn-spec]
+  (let [fn-spec (@#'s/maybe-spec raw-fn-spec)
         conform! (fn [v role spec data data-key]
                    (with-instrument-disabled
                      (let [conformed (s/conform spec data)]
@@ -99,8 +99,12 @@ failure in instrument."
                          (let [caller (->> (.getStackTrace (Thread/currentThread))
                                            stacktrace-relevant-to-instrument
                                            first)
+                               via (if-some [n (#'s/spec-name spec)]
+                                     [n]
+                                     [])
                                ed (merge (assoc (s/explain-data* spec [role]
-                                                                 [] []
+                                                                 via
+                                                                 []
                                                                  data)
                                                 data-key data
                                                 ::s/failure :instrument)
