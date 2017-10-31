@@ -68,11 +68,5 @@ I highly recommend having this **always on** during development and testing. You
 may have systems tests, rather than unit tests, and this can help verify that
 your data stays in the exact shape you intended.
 
-## Donate
-Feel free to shoot Bitcoins my way: **123NMGCvRZLfQJwk2AhsLMLSpCCJhCRoz6**
-
-For more information regarding how I use donations, see
-[here](http://jeaye.com/donate/).
-
 ## License
 Distributed under the Eclipse Public License version 1.0, just like Clojure.
