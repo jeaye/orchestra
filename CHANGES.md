@@ -1,3 +1,9 @@
+## Unreleased
+
+### Changes
+
+- Add `defn-spec` macro [#7](https://github.com/jeaye/orchestra/issues/12)
+
 ## 2017.08.13
 
 ### Changes
