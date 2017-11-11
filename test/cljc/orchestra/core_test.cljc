@@ -1,18 +1,18 @@
 (ns orchestra.core-test
   (:require #?@(:clj [[clojure.test :refer :all]
                       [clojure.spec.alpha :as s]
-                      [orchestra.spec.test :as st]]
+                      [orchestra.spec.test :as st]
+                      [orchestra.core :refer [defn-spec]]]
 
               :cljs [[cljs.test
                       :refer-macros [deftest testing is use-fixtures]]
                      [cljs.spec.alpha :as s]
-                     [orchestra-cljs.spec.test :as st]])))
+                     [orchestra-cljs.spec.test :as st]
+                     [orchestra.core :refer-macros [defn-spec]]])))
 
-(defn args'
-  [meow]
+(defn-spec args' true?
+  [meow string?]
   true)
-(s/fdef args'
-        :args (s/cat :meow string?))
 
 (deftest args
   (testing "Positive"
@@ -21,11 +21,9 @@
     (is (thrown? #?(:clj RuntimeException :cljs :default)
                  (args' 42)))))
 
-(defn ret'
-  [meow]
+(defn-spec ret' integer?
+  [meow any?]
   meow)
-(s/fdef ret'
-        :ret integer?)
 
 (deftest ret
   (testing "Positive"
@@ -34,12 +32,10 @@
     (is (thrown? #?(:clj RuntimeException :cljs :default)
                  (ret' true)))))
 
-(defn func'
-  [meow]
+(defn-spec func' number?
+  {:fn #(= (:ret %) (-> % :args second :meow))}
+  [meow number?]
   (Math/abs meow))
-(s/fdef func'
-        :args (s/cat :meow number?)
-        :fn #(= (:ret %) (-> % :args :meow)))
 
 (deftest func
   (testing "Positive"
@@ -48,17 +44,14 @@
     (is (thrown? #?(:clj RuntimeException :cljs :default)
                  (func' -42)))))
 
-(defn full'
-  [meow]
+(defn-spec full' number?
+  {:fn #(let [meow (-> % :args second :meow)
+              ret (:ret %)]
+          (or (= ret meow)
+              (and (< meow 0)
+                   (= (- ret) meow))))}
+  [meow number?]
   (Math/abs meow))
-(s/fdef full'
-        :args (s/cat :meow number?)
-        :fn #(let [meow (-> % :args :meow)
-                   ret (:ret %)]
-               (or (= ret meow)
-                   (and (< meow 0)
-                        (= (- ret) meow))))
-        :ret number?)
 
 (deftest full
   (testing "Positive"
@@ -78,7 +71,7 @@
   [meow]
   (Math/abs meow))
 (s/fdef func-no-args-spec
-        :fn #(= (:ret %) (-> % :args :meow)))
+        :fn #(= (:ret %) (-> % :args second :meow)))
 
 (deftest func-negative
   (testing "Negative"
@@ -90,7 +83,8 @@
     (st/with-instrument-disabled
       (is (func-no-args-spec -42)))))
 
-(defn instrument-fixture [f]
+(defn-spec instrument-fixture any?
+  [f fn?]
   (st/unstrument)
   (st/instrument)
   (f))
