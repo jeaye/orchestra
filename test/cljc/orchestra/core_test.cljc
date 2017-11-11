@@ -58,6 +58,29 @@
     (is (full' 0))
     (is (full' -10))))
 
+(defn-spec destruct-map' number?
+  [{:keys [a b]} (s/map-of keyword? number?)]
+  (+ a b))
+
+(deftest destruct-map
+  (testing "Positive"
+    (is (= 42 (destruct-map' {:a 30 :b 12}))))
+  (testing "Negative"
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (destruct-map' nil)))))
+
+(defn-spec doc-string' nil?
+  "Doc strings also work just fine."
+  []
+  nil)
+
+(deftest doc-string
+  (testing "Invocation"
+    (is (nil? (doc-string'))))
+  (testing "Meta"
+    (is (= "Doc strings also work just fine."
+           (-> #'doc-string' meta :doc)))))
+
 (defn empty-spec'
   [meow]
   (Math/abs meow))
