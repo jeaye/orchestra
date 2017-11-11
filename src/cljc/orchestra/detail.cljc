@@ -1,4 +1,4 @@
-(ns lets-bet.common.spec.detail
+(ns orchestra.detail
   (:require [#?(:clj clojure.spec.alpha
                 :cljs cljs.spec.alpha)
              :as s]))
