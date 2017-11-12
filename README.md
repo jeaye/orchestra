@@ -141,7 +141,7 @@ validator and that needs to be handled. Here's an example.
 ; If we call (arities 2 2) then then :fn validator gets this:
 {:ret 4, :args [:arity-2 {:a 2, :b 2}]}
 
-; If we call (arities' "" false {}) then the :fn validator gets this:
+; If we call (arities "" false {}) then the :fn validator gets this:
 {:ret 0, :args [:arity-3 {:a "", :b false, :c {}}]}
 ```
 
