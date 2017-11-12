@@ -33,7 +33,7 @@
                  (ret' true)))))
 
 (defn-spec func' number?
-  {:fn #(= (:ret %) (-> % :args second :meow))}
+  {:fn #(= (:ret %) (-> % :args :meow))}
   [meow number?]
   (Math/abs meow))
 
@@ -45,7 +45,7 @@
                  (func' -42)))))
 
 (defn-spec full' number?
-  {:fn #(let [meow (-> % :args second :meow)
+  {:fn #(let [meow (-> % :args :meow)
               ret (:ret %)]
           (or (= ret meow)
               (and (< meow 0)
@@ -131,7 +131,7 @@
   [meow]
   (Math/abs meow))
 (s/fdef func-no-args-spec
-        :fn #(= (:ret %) (-> % :args second :meow)))
+        :fn #(= (:ret %) (-> % :args :meow)))
 
 (deftest func-negative
   (testing "Negative"
