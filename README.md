@@ -19,7 +19,7 @@ Leiningen dependency:
 ;;
 ;; ClojureScript requirements
 ;;    org.clojure/clojurescript >= 1.9.671
-[orchestra "2017.08.13"]
+[orchestra "2017.11.12-1"]
 
 ;; Requires 1.9.0 >= Clojure < 1.9.0-alpha16
 ;; Does not support ClojureScript
