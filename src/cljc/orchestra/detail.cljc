@@ -139,7 +139,11 @@
         arg-counts (mapv count arg-specs)
         cats (mapv build-cat arg-names arg-specs)
         named-cats (mapcat vector (mapv name-arity arg-counts) cats)]
-    (cons (spec-fn ::or) named-cats)))
+    ; To keep specs as simple as possible, we avoid the s/or when there's only
+    ; a single arity. This is the typical case, so it's worth prefering
+    (if (= 1 (count arg-specs))
+      (first cats)
+      (cons (spec-fn ::or) named-cats))))
 
 (defn explode-def
   "Takes in the variadic values of a defn-spec and returns a map of the
