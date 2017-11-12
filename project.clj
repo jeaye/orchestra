@@ -1,4 +1,4 @@
-(defproject orchestra "2017.11.12-SNAPSHOT"
+(defproject orchestra "2017.11.12-1"
   :description "Complete instrumentation for clojure.spec"
   :url "https://github.com/jeaye/orchestra"
   :license {:name "Eclipse Public License"
@@ -29,6 +29,4 @@
                                         {:source-paths ["test/cljs/" "test/cljc/"]
                                          :compiler
                                          {:main orchestra-cljs.test
-                                          :target :nodejs}}}}}}
-
-  :deploy-repositories [["releases" :clojars]])
+                                          :target :nodejs}}}}}})
