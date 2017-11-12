@@ -74,6 +74,14 @@ their specs together in a way which encourages having more specs. You can use it
 like this:
 
 ```clojure
+; Clojure
+(ns kitty-ninja
+  (:require [orchestra.core :refer [defn-spec]]))
+
+; ClojureScript
+(ns kitty-ninja
+  (:require [orchestra.core :refer-macros [defn-spec]]))
+
 ; The return spec comes after the fn name.
 (defn-spec my-inc integer?
   [a integer?] ; Each argument is followed by its spec.
