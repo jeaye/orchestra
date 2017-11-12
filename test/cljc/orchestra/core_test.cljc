@@ -81,6 +81,43 @@
     (is (= "Doc strings also work just fine."
            (-> #'doc-string' meta :doc)))))
 
+; Blocked on a ClojureScript bug for now
+(defn-spec arities' number?
+  ([a number?]
+   (inc a))
+  ([a number?, b number?]
+   (+ a b))
+  ([a string?, b boolean?, c map?]
+   0))
+
+#?(:clj
+   (deftest arities
+     (testing "Arity-1 Positive"
+       (is (= 2 (arities' 1))))
+     (testing "Arity-1 Negative"
+       (is (thrown? #?(:clj RuntimeException :cljs :default)
+                    (arities' false))))
+
+     (testing "Arity-2 Positive"
+       (is (= 6 (arities' 1 5))))
+     (testing "Arity-2 Negative"
+       (is (thrown? #?(:clj RuntimeException :cljs :default)
+                    (arities' "bad" nil))))
+
+     (testing "Arity-3 Positive"
+       (is (= 0 (arities' "" true {}))))
+     (testing "Arity-3 Negative"
+       (is (thrown? #?(:clj RuntimeException :cljs :default)
+                    (arities' nil nil nil))))))
+
+(defn-spec wrap-single-arity' nil?
+  ([]
+   nil))
+
+(deftest wrap-single-arity
+  (testing "Positive"
+    (is (nil? (wrap-single-arity')))))
+
 (defn empty-spec'
   [meow]
   (Math/abs meow))
