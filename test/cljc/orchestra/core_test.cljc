@@ -110,6 +110,26 @@
        (is (thrown? #?(:clj RuntimeException :cljs :default)
                     (arities' nil nil nil))))))
 
+(defn-spec sum' number?
+  ([a number?]
+   a)
+  ; Varargs are also supported.
+  ([a number?, b number?, & args (s/* number?)]
+   (apply + a b args)))
+
+#?(:clj (deftest sum
+          (testing "Arity-1 Positive"
+            (is (= 5 (sum' 5))))
+          (testing "Arity-1 Negative"
+            (is (thrown? #?(:clj RuntimeException :cljs :default)
+                         (sum' nil))))
+
+          (testing "Arity-n Positive"
+            (is (= 25 (apply sum' (repeat 5 5)))))
+          (testing "Arity-n Negative"
+            (is (thrown? #?(:clj RuntimeException :cljs :default)
+                         (apply sum' (repeat 5 :not-a-number)))))))
+
 (defn-spec wrap-single-arity' nil?
   ([]
    nil))
