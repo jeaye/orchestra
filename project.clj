@@ -10,7 +10,6 @@
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.14"]
             [lein-doo "0.1.8"]]
-  :hooks [leiningen.cljsbuild]
   :global-vars {*warn-on-reflection* true}
   :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
   :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "app" "once"]}
