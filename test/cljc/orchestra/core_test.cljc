@@ -138,6 +138,29 @@
   (testing "Positive"
     (is (nil? (wrap-single-arity')))))
 
+(s/def ::cat-arg (s/cat :first keyword? :rest (s/* any?)))
+(defn-spec cat-arg nil?
+  [a ::cat-arg]
+  nil)
+(defn-spec cat-args nil?
+  [a ::cat-arg, & args (s/* any?)]
+  nil)
+
+(deftest wrap-args-in-spec
+  (testing "Non-vararg Positive"
+    (is (nil? (cat-arg [:ok]))))
+  (testing "Non-vararg Negative"
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (cat-arg 1))))
+  (testing "Vararg Positive"
+    (is (nil? (cat-args [:ok :anything "goes" 'here 12]))))
+  (testing "Vararg Negative Int"
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (cat-args 1))))
+  (testing "Vararg Negative Seq"
+    (is (thrown? #?(:clj RuntimeException :cljs :default)
+                 (cat-args ["not a keyword" :the-rest 'does-not-matter 1.2])))))
+
 (defn empty-spec'
   [meow]
   (Math/abs meow))

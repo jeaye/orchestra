@@ -61,16 +61,21 @@
                                :arities (s/alt :single ::arity
                                                :multiple (s/+ (s/spec ::arity)))))
 
-(def ^{:dynamic true} *cljs?* false)
+(def ^:dynamic *cljs?* false)
+
+(defn get-global-defn []
+  'clojure.core/defn)
 
 (defn spec-fn [fn-name]
   ; Can't use a map here, since these are macros.
   (if *cljs?*
     (case fn-name
+      ::spec 'cljs.spec.alpha/spec
       ::cat 'cljs.spec.alpha/cat
       ::or 'cljs.spec.alpha/or
       ::fdef 'cljs.spec.alpha/fdef)
     (case fn-name
+      ::spec 'clojure.spec.alpha/spec
       ::cat 'clojure.spec.alpha/cat
       ::or 'clojure.spec.alpha/or
       ::fdef 'clojure.spec.alpha/fdef)))
@@ -106,14 +111,19 @@
   [arity]
   (let [args (get-in arity [:args :args])
         varargs (get-in arity [:args :varargs])
-        arg-specs (mapv :spec args)
+        arg-specs (mapv (fn [{:keys [spec]}]
+                          ; We automatically wrap non-vararg specs in (s/spec).
+                          ; This ensure no regex specs flatten to apply to the
+                          ; fdef's outer :args s/cat.
+                          (list (spec-fn ::spec) spec))
+                        args)
         arity-specs (if-some [varargs (get-in arity [:args :varargs])]
                       (conj arg-specs (:spec varargs))
                       arg-specs)]
     arity-specs))
 
 (defn arg->kw
-  "Converts are argument to a keyword. Arguments may use destructoring, so they
+  "Converts are argument to a keyword. Arguments may use destructuring, so they
    may not be a symbol. In that case, just fill in something helpful."
   [idx arg]
   (if (symbol? arg)
