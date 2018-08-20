@@ -1,3 +1,9 @@
+## 2018.08.19-1
+
+### Changes
+
+- Add implicit `s/spec` to non-variadic args in `defn-spec` [commit](https://github.com/jeaye/orchestra/commit/bc2561f63aace0fe6d822d8242d652254d504c49)
+
 ## 2017.11.12-1
 
 ### Changes

@@ -3,27 +3,20 @@
 Orchestra is a Clojure(Script) library made as a drop-in replacement for
 [clojure.spec.test.alpha](https://clojure.org/guides/spec), which provides custom
 instrumentation that validates all aspects of function specs. By default,
-clojure.spec will only instrument `:args`.  This leaves out `:ret` and `:fn`
+clojure.spec will only instrument `:args`. This leaves out `:ret` and `:fn`
 from automatic validation; Orchestra checks all of them for you.
 
 ## Usage
 Leiningen dependency:
 
 ```clojure
-;; Depending on your Clojure version, choose one of the following. All of them
-;; provide the same API but follow different internal spec changes.
-
 ;; Clojure requirements
-;;    org.clojure/clojure >= 1.9.0-alpha16
+;;    org.clojure/clojure >= 1.9.0
 ;;    org.clojure/spec.alpha >= 0.1.108
 ;;
 ;; ClojureScript requirements
 ;;    org.clojure/clojurescript >= 1.9.671
-[orchestra "2017.11.12-1"]
-
-;; Requires 1.9.0 >= Clojure < 1.9.0-alpha16
-;; Does not support ClojureScript
-[orchestra "0.2.0"]
+[orchestra "2018.08.19-1"]
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
