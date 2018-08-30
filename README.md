@@ -97,7 +97,7 @@ like this:
 
 ; :fn specs can be specified using the fn's meta map.
 (defn-spec my-abs number?
-  {:fn #(= (:ret %) (-> % :args :meow))}
+  {:fn #(= (:ret %) (-> % :args :n))}
   [n number?]
   (Math/abs n))
 
