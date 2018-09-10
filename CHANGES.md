@@ -1,3 +1,9 @@
+## 2018.09.10-1
+
+### Changes
+
+- Allow instrumentation of a huge amount of functions [commit](https://github.com/jeaye/orchestra/commit/86f3a93918994db2ea0f90de2e767203b7b6d2c0)
+
 ## 2018.08.19-1
 
 ### Changes
