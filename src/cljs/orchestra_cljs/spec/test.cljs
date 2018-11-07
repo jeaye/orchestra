@@ -138,7 +138,7 @@
   [spec sym {overrides :spec}]
   (get overrides sym spec))
 
-(defn- instrument-1*
+(defn instrument-1*
   [s v opts]
   (let [spec (s/get-spec v)
         {:keys [raw wrapped]} (get @instrumented-vars v)
@@ -151,7 +151,7 @@
     (swap! instrumented-vars assoc v {:raw to-wrap :wrapped checked})
     checked))
 
-(defn- unstrument-1*
+(defn unstrument-1*
   [s v]
   (when v
     (when-let [{:keys [raw wrapped]} (get @instrumented-vars v)]
