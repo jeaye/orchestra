@@ -4,11 +4,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.10.339" :scope "provided"]
-                 [org.clojure/spec.alpha "0.2.168" :scope "provided"]]
-  :plugins [[lein-cloverage "1.0.11"]
+                 [org.clojure/clojurescript "1.10.439" :scope "provided"]
+                 [org.clojure/spec.alpha "0.2.176" :scope "provided"]]
+  :plugins [[lein-cloverage "1.0.13"]
             [lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.16"]
+            [lein-figwheel "0.5.17"]
             [lein-doo "0.1.10"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :global-vars {*warn-on-reflection* true}
