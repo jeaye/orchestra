@@ -1,3 +1,9 @@
+## 2018.11.07-1
+
+### Changes
+
+- Make a couple fns public, to avoid new CLJS warnings #27
+
 ## 2018.09.10-1
 
 ### Changes
