@@ -96,13 +96,13 @@
                                                                via
                                                                []
                                                                data)
-                                              ::s/fn (s/->sym v)
+                                              ::s/fn (#'s/->sym v)
                                               data-key data
                                               ::s/failure :instrument)
                                        (when caller
                                          {::caller caller}))]
                          (throw (ex-info
-                                  (str "Call to " (s/->sym v) " did not conform to spec.")
+                                  (str "Call to " (#'s/->sym v) " did not conform to spec.")
                                   ed)))
                        conformed)))
         pure-variadic? (and (-> (meta v) :top-fn :variadic?)
@@ -115,9 +115,17 @@
         ret (fn [& args]
               (if *instrument-enabled*
                 (with-instrument-disabled
-                  (when (:args fn-spec) (conform! v :args (:args fn-spec) args args))
-                  (binding [*instrument-enabled* true]
-                    (apply' f args)))
+                  (let [cargs (when (:args fn-spec)
+                                (conform! v :args (:args fn-spec) args ::s/args))
+                        ret (binding [*instrument-enabled* true]
+                              (apply' f args))]
+                    (when (:ret fn-spec)
+                      (conform! v :ret (:ret fn-spec) ret ::s/ret))
+                    (when-let [spec (:fn fn-spec)]
+                      (if (nil? cargs)
+                        (throw (no-args-spec v fn-spec))
+                        (conform! v :fn spec {:ret ret :args cargs} ::s/fn)))
+                    ret))
                 (apply' f args)))]
     (when-not pure-variadic?
       (setup-static-dispatches f ret 20)
