@@ -42,17 +42,26 @@
 (defmacro with-instrument-disabled
   "Disables instrument's checking of calls, within a scope."
   [& body]
-  `(binding [orchestra-cljs.spec.test/*instrument-enabled* nil]
-     ~@body))
+  `(let [orig# @#'orchestra-cljs.spec.test/*instrument-enabled*]
+     (set! orchestra-cljs.spec.test/*instrument-enabled* nil)
+     (try
+       ~@body
+       (finally
+         (set! orchestra-cljs.spec.test/*instrument-enabled* orig#)))))
 
 (defmacro instrument-1
   [[quote s] opts]
   (when-let [v (ana-api/resolve &env s)]
-    (when (nil? (:const v))
-      (swap! instrumented-vars conj (:name v))
-      `(let [checked# (instrument-1* ~s (var ~s) ~opts)]
-         (when checked# (set! ~s checked#))
-         '~(:name v)))))
+    (let [var-name (:name v)]
+      (when (and (nil? (:const v))
+                 #?(:cljs (nil? (:macro v)))
+                 (contains? #?(:clj (s/speced-vars)
+                               :cljs (cljs.spec.alpha$macros/speced-vars))
+                            var-name))
+        (swap! instrumented-vars conj var-name)
+        `(let [checked# (#'instrument-1* '~s (var ~s) ~opts)]
+           (when checked# (set! ~s checked#))
+           '~var-name)))))
 
 (defmacro unstrument-1
   [[quote s]]
@@ -158,3 +167,16 @@
                       `(fn []
                          (unstrument-1 '~sym)))))
                 (remove nil?))]))))
+
+(defmacro ^:private maybe-setup-static-dispatch [f ret arity]
+  (let [arity-accessor (symbol (str ".-cljs$core$IFn$_invoke$arity$" arity))
+        argv (mapv #(symbol (str "arg" %)) (range arity))]
+    `(when (some? (~arity-accessor ~f))
+       (set! (~arity-accessor ~ret)
+         (fn ~argv
+           (apply ~ret ~argv))))))
+(defmacro ^:private setup-static-dispatches [f ret max-arity]
+  `(do
+     ~@(mapv (fn [arity]
+               `(maybe-setup-static-dispatch ~f ~ret ~arity))
+         (range (inc max-arity)))))
