@@ -102,7 +102,7 @@ failure in instrument."
                                via (if-some [n (#'s/spec-name spec)]
                                      [n]
                                      [])
-                               ed (merge (assoc (s/explain-data* spec [role]
+                               ed (merge (assoc (s/explain-data* spec []
                                                                  via
                                                                  []
                                                                  data)
@@ -111,8 +111,7 @@ failure in instrument."
                                          (when caller
                                            {::caller (dissoc caller :class :method)}))]
                            (throw (ex-info
-                                    (str "Call to " v " did not conform to spec:\n"
-                                         (with-out-str (s/explain-out ed)))
+                                    (str "Call to " v " did not conform to spec.")
                                     ed)))
                          conformed))))]
     (fn
