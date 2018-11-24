@@ -9,7 +9,7 @@
   :plugins [[lein-cloverage "1.0.13"]
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.17"]
-            [lein-doo "0.1.10"]
+            [lein-doo "0.1.11"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :global-vars {*warn-on-reflection* true}
   :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
@@ -23,7 +23,7 @@
                          :output-dir "target/test"
                          :output-to "target/test.js"}}}}
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[lein-doo "0.1.10"]]
+             :dev {:dependencies [[lein-doo "0.1.11"]]
                    :source-paths ["test/clj/" "test/cljc/"]
                    :cljsbuild {:builds {:app
                                         {:source-paths ["test/cljs/" "test/cljc/"]
