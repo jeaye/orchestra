@@ -5,3 +5,4 @@ set -eu
 lein uberjar
 
 lein test
+lein cljsbuild test
