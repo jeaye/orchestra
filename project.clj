@@ -21,7 +21,8 @@
                          :output-dir "target/test"
                          :output-to "target/test.js"}}}}
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[lein-doo "0.1.11"]]
+             :dev {:dependencies [[expound "0.7.1"]
+                                  [lein-doo "0.1.11"]]
                    :source-paths ["test/clj/" "test/cljc/"]
                    :cljsbuild {:builds {:app
                                         {:source-paths ["test/cljs/" "test/cljc/"]

@@ -111,7 +111,10 @@ failure in instrument."
                                          (when caller
                                            {::caller (dissoc caller :class :method)}))]
                            (throw (ex-info
-                                    (str "Call to " v " did not conform to spec.")
+                                    (str "Call to "
+                                       (#'s/->sym v)
+                                       " did not conform to spec:\n"
+                                       (with-out-str (s/explain-out ed)))
                                     ed)))
                          conformed))))]
     (fn

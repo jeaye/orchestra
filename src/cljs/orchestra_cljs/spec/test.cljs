@@ -96,13 +96,16 @@
                                                                via
                                                                []
                                                                data)
-                                              ::s/fn (#'s/->sym v)
+                                              ;::s/fn (#'s/->sym v)
                                               data-key data
                                               ::s/failure :instrument)
                                        (when caller
                                          {::caller caller}))]
                          (throw (ex-info
-                                  (str "Call to " (#'s/->sym v) " did not conform to spec.")
+                                  (str "Call to "
+                                       (#'s/->sym v)
+                                       " did not conform to spec:\n"
+                                       (with-out-str (s/explain-out ed)))
                                   ed)))
                        conformed)))
         pure-variadic? (and (-> (meta v) :top-fn :variadic?)
