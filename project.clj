@@ -9,12 +9,10 @@
   :plugins [[lein-cloverage "1.0.13"]
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.17"]
-            [lein-doo "0.1.11"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :global-vars {*warn-on-reflection* true}
   :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
-  :cljsbuild {:test-commands {"test" ["lein" "doo" "node" "app" "once"]}
-              :builds {:app
+  :cljsbuild {:builds {:app
                        {:source-paths ["src/cljs/"]
                         :compiler
                         {:optimizations :advanced
