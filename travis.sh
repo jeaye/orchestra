@@ -5,4 +5,5 @@ set -eu
 lein uberjar
 
 lein test
-lein cljsbuild test
+lein cljsbuild once
+node ./target/test.js
