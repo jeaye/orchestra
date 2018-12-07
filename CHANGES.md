@@ -1,3 +1,10 @@
+## 2018.12.06-2
+
+### Changes
+
+- Caught up with the latest upstream CLJS, save for CLJS-2890 and CLJS-2891,
+  since they break Expound support
+
 ## 2018.11.07-1
 
 ### Changes
