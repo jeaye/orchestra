@@ -102,7 +102,7 @@ failure in instrument."
                                via (if-some [n (#'s/spec-name spec)]
                                      [n]
                                      [])
-                               ed (merge (assoc (s/explain-data* spec []
+                               ed (merge (assoc (s/explain-data* spec [role]
                                                                  via
                                                                  []
                                                                  data)
