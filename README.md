@@ -16,7 +16,7 @@ Leiningen dependency:
 ;;
 ;; ClojureScript requirements
 ;;    org.clojure/clojurescript >= 1.9.671
-[orchestra "2018.09.10-1"]
+[orchestra "2018.12.06-2"]
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
