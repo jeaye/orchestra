@@ -115,7 +115,7 @@ failure in instrument."
                                        (#'s/->sym v)
                                        " did not conform to spec:\n"
                                        (with-out-str (s/explain-out ed)))
-                                    (assoc ed :var v))))
+                                    (assoc ed :orchestra.spec/var v))))
                          conformed))))]
     (fn
       [& args]
