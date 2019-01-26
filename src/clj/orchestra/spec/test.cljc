@@ -87,7 +87,8 @@ failure in instrument."
                     (map interpret-stack-trace-element)
                     (filter :var-scope)
                     (drop-while plumbing?))
-              elems)))
+      #?(:clj elems
+         :cljr (.. elems GetFrames)))))
 
 (defn- spec-checking-fn
   [v f raw-fn-spec]
@@ -96,7 +97,8 @@ failure in instrument."
                    (with-instrument-disabled
                      (let [conformed (s/conform spec data)]
                        (if (= ::s/invalid conformed)
-                         (let [caller (->> (.getStackTrace (Thread/currentThread))
+                         (let [caller (->> #?(:clj (.getStackTrace (Thread/currentThread))
+                                              :cljr (System.Diagnostics.StackTrace. true))
                                            stacktrace-relevant-to-instrument
                                            first)
                                via (if-some [n (#'s/spec-name spec)]
