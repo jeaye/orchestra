@@ -192,3 +192,15 @@
   (st/instrument)
   (f))
 (use-fixtures :each instrument-fixture)
+
+(defn-spec conform-ret-into-fn (s/or :error #{:error}
+                                     :success string?)
+  {:fn #(condp = (-> % :ret key)
+          :success (and (clojure.string/starts-with? (-> % :ret val) "your-")
+                        (clojure.string/ends-with? (-> % :ret val) (-> % :args :string)))
+          true)}
+  [string string?]
+  (str "your-" string))
+
+(deftest conform-ret-into-fn-test
+  (is (conform-ret-into-fn "Hello")))

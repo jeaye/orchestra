@@ -124,13 +124,13 @@ failure in instrument."
       (if *instrument-enabled*
         (let [cargs (when-let [spec (:args fn-spec)]
                       (conform! v :args spec args ::s/args))
-              ret (.applyTo ^clojure.lang.IFn f args)]
-          (when-let [spec (:ret fn-spec)]
-            (conform! v :ret spec ret ::s/ret))
+              ret (.applyTo ^clojure.lang.IFn f args)
+              cret (when-let [spec (:ret fn-spec)]
+                     (conform! v :ret spec ret ::s/ret))]
           (when-let [spec (:fn fn-spec)]
             (if (nil? cargs)
               (throw (no-args-spec v fn-spec))
-              (conform! v :fn spec {:ret ret :args cargs} ::s/fn)))
+              (conform! v :fn spec {:ret cret :args cargs} ::s/fn)))
           ret)
         (.applyTo ^clojure.lang.IFn f args)))))
 

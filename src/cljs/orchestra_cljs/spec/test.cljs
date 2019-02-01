@@ -121,13 +121,13 @@
                   (let [cargs (when (:args fn-spec)
                                 (conform! v :args (:args fn-spec) args ::s/args))
                         ret (binding [*instrument-enabled* true]
-                              (apply' f args))]
-                    (when (:ret fn-spec)
-                      (conform! v :ret (:ret fn-spec) ret ::s/ret))
+                              (apply' f args))
+                        cret (when (:ret fn-spec)
+                               (conform! v :ret (:ret fn-spec) ret ::s/ret))]
                     (when-let [spec (:fn fn-spec)]
                       (if (nil? cargs)
                         (throw (no-args-spec v fn-spec))
-                        (conform! v :fn spec {:ret ret :args cargs} ::s/fn)))
+                        (conform! v :fn spec {:ret cret :args cargs} ::s/fn)))
                     ret))
                 (apply' f args)))]
     (when-not pure-variadic?
