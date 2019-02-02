@@ -130,7 +130,7 @@ failure in instrument."
           (when-let [spec (:fn fn-spec)]
             (if (nil? cargs)
               (throw (no-args-spec v fn-spec))
-              (conform! v :fn spec {:ret cret :args cargs} ::s/fn)))
+              (conform! v :fn spec {:ret (or cret ret) :args cargs} ::s/fn)))
           ret)
         (.applyTo ^clojure.lang.IFn f args)))))
 
