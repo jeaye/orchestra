@@ -186,21 +186,35 @@
     (st/with-instrument-disabled
       (is (func-no-args-spec -42)))))
 
-(defn-spec instrument-fixture any?
-  [f fn?]
-  (st/unstrument)
-  (st/instrument)
-  (f))
-(use-fixtures :each instrument-fixture)
-
 (defn-spec conform-ret-into-fn (s/or :error #{:error}
                                      :success string?)
   {:fn #(condp = (-> % :ret key)
-          :success (and (clojure.string/starts-with? (-> % :ret val) "your-")
-                        (clojure.string/ends-with? (-> % :ret val) (-> % :args :string)))
+          :success (and (clojure.string/starts-with? (-> % :ret val)
+                                                     "your-")
+                        (clojure.string/ends-with? (-> % :ret val)
+                                                   (-> % :args :string)))
           true)}
   [string string?]
   (str "your-" string))
 
 (deftest conform-ret-into-fn-test
   (is (conform-ret-into-fn "Hello")))
+
+(defn-spec var-is-added' nil?
+  []
+  :not-nil)
+
+(deftest var-is-added
+  (testing "Positive"
+    (try
+      (var-is-added')
+      (is false "Exception should've been thrown")
+      (catch #?(:clj RuntimeException :cljs :default) ex
+        (is (= #'var-is-added' (-> ex ex-data :orchestra.spec/var)))))))
+
+(defn-spec instrument-fixture any?
+  [f fn?]
+  (st/unstrument)
+  (st/instrument)
+  (f))
+(use-fixtures :each instrument-fixture)
