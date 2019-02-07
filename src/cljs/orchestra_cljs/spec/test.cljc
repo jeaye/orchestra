@@ -35,9 +35,7 @@
   [sym-or-syms]
   (if (::no-eval (meta sym-or-syms))
     (second sym-or-syms)
-    (do
-      (println "eval" sym-or-syms)
-      (eval sym-or-syms))))
+    (eval sym-or-syms)))
 
 (defmacro with-instrument-disabled
   "Disables instrument's checking of calls, within a scope."
