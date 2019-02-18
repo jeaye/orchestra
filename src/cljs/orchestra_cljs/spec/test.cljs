@@ -102,10 +102,7 @@
                                        (when caller
                                          {::caller caller}))]
                          (throw (ex-info
-                                  (str "Call to "
-                                       (#'s/->sym v)
-                                       " did not conform to spec:\n"
-                                       (with-out-str (s/explain-out ed)))
+                                  (str "Call to " v " did not conform to spec.")
                                   ed)))
                        conformed)))
         pure-variadic? (and (-> (meta v) :top-fn :variadic?)

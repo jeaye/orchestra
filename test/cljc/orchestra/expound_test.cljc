@@ -18,9 +18,13 @@
 
 (deftest expound
   (testing "Pretty printed"
-    (is (thrown-with-msg? #?(:clj RuntimeException :cljs :default)
-                          #".*Detected 1 error.*"
-                          (expound' 42)))))
+    (try
+      (expound' 42)
+      (catch #?(:clj RuntimeException :cljs :default) e
+        (is (= nil (->> (ex-data e)
+                        s/explain-out
+                        with-out-str
+                        (re-matches #".*\s*Detected 1 error\s*.*"))))))))
 
 (defn-spec instrument-fixture any?
   [f fn?]
