@@ -210,7 +210,7 @@
       (var-is-added')
       (is false "Exception should've been thrown")
       (catch #?(:clj RuntimeException :cljs :default) ex
-        (is (= #'var-is-added' (-> ex ex-data :orchestra.spec/var)))))))
+        (is (= `var-is-added' (-> ex ex-data ::s/fn)))))))
 
 (defn-spec instrument-fixture any?
   [f fn?]

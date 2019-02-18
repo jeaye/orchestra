@@ -96,7 +96,7 @@
                                                                via
                                                                []
                                                                data)
-                                              ;::s/fn (#'s/->sym v)
+                                              ::s/fn (#'s/->sym v)
                                               data-key data
                                               ::s/failure :instrument)
                                        (when caller
@@ -106,7 +106,7 @@
                                        (#'s/->sym v)
                                        " did not conform to spec:\n"
                                        (with-out-str (s/explain-out ed)))
-                                  (assoc ed :orchestra.spec/var v))))
+                                  ed)))
                        conformed)))
         pure-variadic? (and (-> (meta v) :top-fn :variadic?)
                             (zero? (-> (meta v) :top-fn :max-fixed-arity)))
