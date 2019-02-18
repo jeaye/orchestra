@@ -3,12 +3,12 @@
   :url "https://github.com/jeaye/orchestra"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.10.439" :scope "provided"]
+  :dependencies [[org.clojure/clojure "1.10.0" :scope "provided"]
+                 [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [org.clojure/spec.alpha "0.2.176" :scope "provided"]]
   :plugins [[lein-cloverage "1.0.13"]
             [lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.17"]
+            [lein-figwheel "0.5.18"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :global-vars {*warn-on-reflection* true}
   :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
@@ -21,7 +21,7 @@
                          :output-dir "target/test"
                          :output-to "target/test.js"}}}}
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[expound "0.7.1"]
+             :dev {:dependencies [[expound "0.7.2"]
                                   [lein-doo "0.1.11"]]
                    :source-paths ["test/clj/" "test/cljc/"]
                    :cljsbuild {:builds {:app
