@@ -135,7 +135,12 @@
       (when-some [variadic (.-cljs$core$IFn$_invoke$arity$variadic f)]
         (set! (.-cljs$core$IFn$_invoke$arity$variadic ret)
               (fn [& args]
-                (apply variadic args)))))
+                (if *instrument-enabled*
+                  (with-instrument-disabled
+                    (conform! v :args (:args fn-spec) (apply list* args) ::s/args)
+                    (binding [*instrument-enabled* true]
+                      (apply' variadic args)))
+                  (apply' variadic args))))))
     ret))
 
 (defonce ^:private instrumented-vars (atom {}))
