@@ -1,12 +1,14 @@
 (ns orchestra.core-test
   (:require #?@(:clj [[clojure.test :refer :all]
                       [clojure.spec.alpha :as s]
+                      [clojure.spec.test.alpha :as cst]
                       [orchestra.spec.test :as st]
                       [orchestra.core :refer [defn-spec]]]
 
               :cljs [[cljs.test
                       :refer-macros [deftest testing is use-fixtures]]
                      [cljs.spec.alpha :as s]
+                     [cljs.spec.test.alpha :as cst]
                      [orchestra-cljs.spec.test :as st]
                      [orchestra.core :refer-macros [defn-spec]]])))
 
@@ -183,7 +185,7 @@
 
 (deftest disabled
   (testing "Positive"
-    (st/with-instrument-disabled
+    (cst/with-instrument-disabled
       (is (func-no-args-spec -42)))))
 
 (defn-spec conform-ret-into-fn (s/or :error #{:error}
