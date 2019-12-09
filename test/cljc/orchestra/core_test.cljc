@@ -214,6 +214,17 @@
       (catch #?(:clj RuntimeException :cljs :default) ex
         (is (= `var-is-added' (-> ex ex-data ::s/fn)))))))
 
+(defn-spec arities-work-fine' integer?
+  ([]
+   0)
+  ([i integer?]
+   i))
+
+(deftest arities-work-fine
+  (testing "Positive"
+    (is (= 0 (arities-work-fine')))
+    (is (= 777 (arities-work-fine' 777)))))
+
 (defn-spec instrument-fixture any?
   [f fn?]
   (st/unstrument)
