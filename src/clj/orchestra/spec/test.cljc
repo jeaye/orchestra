@@ -21,10 +21,7 @@
                                via (if-some [n (#'s/spec-name spec)]
                                      [n]
                                      [])
-                               ed (merge (assoc (s/explain-data* spec []
-                                                                 via
-                                                                 []
-                                                                 data)
+                               ed (merge (assoc (s/explain-data* spec [] via [] data)
                                                 ::s/fn (#'s/->sym v)
                                                 data-key data
                                                 ::s/failure :instrument)
