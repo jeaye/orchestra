@@ -20,11 +20,8 @@
     (f)))
 (use-fixtures :each instrument-fixture)
 
-(s/def ::uuid (s/and string?
-                     #(re-matches #"[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}" %)))
-
 (defn-spec expound' true?
-  [blah ::uuid]
+  [blah string?]
   true)
 
 (deftest expound
