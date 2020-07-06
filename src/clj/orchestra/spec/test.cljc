@@ -10,39 +10,38 @@
 (defn- spec-checking-fn
   [v f raw-fn-spec]
   (let [fn-spec (#'s/maybe-spec raw-fn-spec)
-        conform! (fn [v role spec data data-key]
+        conform! (fn [v role spec data]
                    (st/with-instrument-disabled
                      (let [conformed (s/conform spec data)]
                        (if (= ::s/invalid conformed)
-                         (let [caller (->> #?(:clj (.getStackTrace (Thread/currentThread))
-                                              :cljr (System.Diagnostics.StackTrace. true))
-                                           (#'st/stacktrace-relevant-to-instrument)
-                                           first)
+                         (let [caller (-> #?(:clj (.getStackTrace (Thread/currentThread))
+                                             :cljr (System.Diagnostics.StackTrace. true))
+                                          (#'st/stacktrace-relevant-to-instrument)
+                                          second)
                                via (if-some [n (#'s/spec-name spec)]
                                      [n]
                                      [])
                                ed (merge (assoc (s/explain-data* spec [] via [] data)
                                                 ::s/fn (#'s/->sym v)
-                                                data-key data
+                                                role data
                                                 ::s/failure :instrument)
-                                         (when caller
+                                         (when (some? caller)
                                            {::caller (dissoc caller :class :method)}))]
-                           (throw (ex-info
-                                    (str "Call to " v " did not conform to spec.")
-                                    ed)))
+                           (throw (ex-info (str "Call to " v " did not conform to spec.") ed)))
                          conformed))))]
     (fn
       [& args]
       (if @#'st/*instrument-enabled*
         (let [cargs (when-some [spec (:args fn-spec)]
-                      (conform! v :args spec args ::s/args))
+                      (conform! v ::s/args spec args))
               ret (.applyTo ^clojure.lang.IFn f args)
               cret (when-some [spec (:ret fn-spec)]
-                     (conform! v :ret spec ret ::s/ret))]
+                     (conform! v ::s/ret spec ret))]
           (when-some [spec (:fn fn-spec)]
             (if (nil? cargs)
               (throw (no-args-spec v fn-spec))
-              (conform! v :fn spec {:ret (or cret ret) :args cargs} ::s/fn)))
+              (conform! v ::s/fn spec {:ret (or cret ret)
+                                       :args cargs})))
           ret)
         (.applyTo ^clojure.lang.IFn f args)))))
 

@@ -12,20 +12,6 @@
 
             [expound.alpha :as expound]))
 
-(defn-spec expound' true?
-  [blah string?]
-  true)
-
-(deftest expound
-  (testing "Pretty printed"
-    (try
-      (expound' 42)
-      (catch #?(:clj RuntimeException :cljs :default) e
-        (is (= nil (->> (ex-data e)
-                        s/explain-out
-                        with-out-str
-                        (re-matches #".*\s*Detected 1 error\s*.*"))))))))
-
 (defn-spec instrument-fixture any?
   [f fn?]
   (st/unstrument)
@@ -33,3 +19,20 @@
   (binding [s/*explain-out* expound/printer]
     (f)))
 (use-fixtures :each instrument-fixture)
+
+(s/def ::uuid (s/and string?
+                     #(re-matches #"[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}" %)))
+
+(defn-spec expound' true?
+  [blah ::uuid]
+  true)
+
+(deftest expound
+  (testing "Pretty printed"
+    (try
+      (expound' 42)
+      (catch #?(:clj RuntimeException :cljs :default) e
+        (is (some? (-> (ex-data e)
+                       s/explain-out
+                       with-out-str
+                       (clojure.string/includes? "-- Spec failed --"))))))))
