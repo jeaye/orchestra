@@ -225,6 +225,18 @@
     (is (= 0 (arities-work-fine')))
     (is (= 777 (arities-work-fine' 777)))))
 
+(defn-spec keyword-args-work-fine' vector?
+  [& {:keys [a b]} (s/keys* :req-un [::a ::b])]
+  [a b])
+
+(deftest keyword-args-work-fine
+  (testing "Positive"
+    (is (= [1 2] (keyword-args-work-fine' :a 1 :b 2)))
+    (is (= [1 2] (keyword-args-work-fine' :b 2 :a 1))))
+
+  (testing "Negative"
+    (is (thrown? #?(:clj RuntimeException :cljs :default) (keyword-args-work-fine' :b 2)))))
+
 (defn-spec instrument-fixture any?
   [f fn?]
   (st/unstrument)
