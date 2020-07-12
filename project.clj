@@ -1,4 +1,4 @@
-(defproject orchestra "development-SNAPSHOT"
+(defproject orchestra "2020.07.12-1"
   :description "Complete instrumentation for clojure.spec"
   :url "https://github.com/jeaye/orchestra"
   :license {:name "Eclipse Public License"

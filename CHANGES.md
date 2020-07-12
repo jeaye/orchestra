@@ -1,3 +1,16 @@
+## 2020.07.12-1
+
+**NOTE**: Following upstream changes, Orchestra no longer includes the explain
+string in the thrown exception. In your applications, catch exceptions and
+output your own explain strings using the explain data in the exception. I
+recommend [Expound](https://github.com/bhb/expound), since it works well and is
+explicitly tested to do so with Orchestra.
+
+- Completely rewrite Orchestra so it's no longer a fork of `spec.test.alpha`;
+  now it just patches a couple of upstream fns with `alter-var-root` and is a
+  fraction of the size
+- No longer pass exception string through explain printer
+
 ## 2019.02.06-1
 
 - Add ClojureCLR support ([#37](https://github.com/jeaye/orchestra/pull/37))
@@ -7,7 +20,7 @@
 
 ## 2018.12.06-2
 
-- Caught up with the latest upstream CLJS, save for CLJS-2890 and CLJS-2891,
+- Catch up with the latest upstream CLJS, save for CLJS-2890 and CLJS-2891,
   since they break Expound support
 
 ## 2018.11.07-1
