@@ -11,12 +11,11 @@ Leiningen dependency:
 
 ```clojure
 ;; Clojure requirements
-;;    org.clojure/clojure >= 1.9.0
-;;    org.clojure/spec.alpha >= 0.1.108
+;;    org.clojure/clojure >= 1.10.1
 ;;
 ;; ClojureScript requirements
-;;    org.clojure/clojurescript >= 1.9.671
-[orchestra "2018.12.06-2"]
+;;    org.clojure/clojurescript >= 1.10.597
+[orchestra "2020.07.12-1"]
 ```
 
 Just replace your `ns` and `require` forms to reference `orchestra.spec.test`
@@ -29,11 +28,15 @@ instead of `clojure.spec.test.alpha`. No further code changes required!
 
 ;; Clojure: After
 (ns kitty-ninja
-  (:require [orchestra.spec.test :as st]))
+  (:require [orchestra.core :refer [defn-spec]]
+            [orchestra.spec.test :as st]
+            [clojure.spec.alpha :as s]))
 
 ;; ClojureScript: After
 (ns kitty-ninja
-  (:require [orchestra-cljs.spec.test :as st]))
+  (:require [orchestra.core :refer-macros [defn-spec]]
+            [orchestra-cljs.spec.test :as st]
+            [clojure.spec.alpha :as s]))
 ```
 
 Just as with vanilla Clojure, begin your instrumentation by calling:
