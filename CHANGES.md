@@ -1,3 +1,7 @@
+## 2020.09.18-1
+
+- Fix some multi-arity issues with CLJS ([#54](https://github.com/jeaye/orchestra/pull/54))
+
 ## 2020.07.12-1
 
 **NOTE**: Following upstream changes, Orchestra no longer includes the explain
