@@ -170,6 +170,7 @@
         args-spec (build-args-spec conformed-arities exploded-arities)]
     {::name (:name conformed)
      ::doc (:docstring conformed)
+     ::meta (:meta conformed)
      ::arities (map render-arity exploded-arities)
      ::spec-map (merge (select-keys (:meta conformed) [:fn])
                        (select-keys conformed [:ret])
@@ -178,7 +179,7 @@
 (defn defn-spec-helper [& args]
   (let [s-fdef (spec-fn ::fdef)
         exploded (apply explode-def args)
-        stripped-meta (dissoc (:meta exploded) :fn)]
+        stripped-meta (dissoc (::meta exploded) :fn)]
     `(do
        (defn ~(::name exploded)
          ~(or (::doc exploded) "")

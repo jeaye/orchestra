@@ -83,7 +83,20 @@
     (is (= "Doc strings also work just fine."
            (-> #'doc-string' meta :doc)))))
 
-; Blocked on a ClojureScript bug for now
+(defn-spec metadata' nil?
+  "Docstring"
+  {:test-meta true}
+  []
+  nil)
+
+(deftest metadata
+  (testing "Invocation"
+    (is (nil? (metadata'))))
+  (testing "Preserves metadata"
+    (is (:test-meta (meta #'metadata')))
+    (is (= "Docstring" (-> #'metadata' meta :doc)))))
+
+                                        ; Blocked on a ClojureScript bug for now
 (defn-spec arities' number?
   ([a number?]
    (inc a))
