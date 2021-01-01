@@ -1,3 +1,7 @@
+## 2021.01.01-1
+
+- Fix meta map support for `defn-spec` ([#55](https://github.com/jeaye/orchestra/pull/55))
+
 ## 2020.09.18-1
 
 - Fix some multi-arity issues with CLJS ([#54](https://github.com/jeaye/orchestra/pull/54))
